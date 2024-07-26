@@ -1,5 +1,6 @@
 
 ###> symfony/framework-bundle ###
+/src/Services/PdoConnection.php
 /.env
 /.env.local
 /.env.local.php
