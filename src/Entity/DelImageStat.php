@@ -2,77 +2,52 @@
 
 namespace App\Entity;
 
+use App\Repository\DelImageStatRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-/**
- * DelImageStat
- *
- * @ORM\Table(name="del_image_stat", indexes={@ORM\Index(name="ce_image", columns={"ce_image"}), @ORM\Index(name="ce_protocole", columns={"ce_protocole", "moyenne"}), @ORM\Index(name="nb_votes", columns={"nb_votes"}), @ORM\Index(name="nb_tags", columns={"nb_tags"}), @ORM\Index(name="moyenne", columns={"moyenne"})})
- * @ORM\Entity
- */
+#[ORM\Table(name: "del_image_stat")]
+#[ORM\Index(name: "ce_image", columns: ["ce_image"])]
+#[ORM\Index(name: "ce_protocole", columns: ["ce_protocole", "moyenne"])]
+#[ORM\Index(name: "nb_votes", columns: ["nb_votes"])]
+#[ORM\Index(name: "nb_tags", columns: ["nb_tags"])]
+#[ORM\Index(name: "moyenne", columns: ["moyenne"])]
+#[ORM\Entity(repositoryClass: DelImageStatRepository::class)]
+
 class DelImageStat
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="ce_image", type="bigint", nullable=false, options={"comment"="id_image (tb_cel.cel_images)"})
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
-     */
-    private $ceImage;
+    #[Groups(['image_stat'])]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "AUTO")]
+    #[ORM\Column(name:"ce_image",type: "integer")]
+    private int $ce_image;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="ce_protocole", type="boolean", nullable=false, options={"comment"="un id de protocole"})
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
-     */
-    private $ceProtocole = '0';
+    #[ORM\ManyToOne(inversedBy: 'image_stats')]
+    #[ORM\JoinColumn(nullable: false,name:"ce_image",referencedColumnName:"id_image")]
+    private ?DelImage $image = null;
 
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="moyenne", type="float", precision=10, scale=0, nullable=false, options={"comment"="moyenne des votes pour une image et un protocole donnÃ©"})
-     */
-    private $moyenne = '0';
+    #[ORM\ManyToOne(inversedBy: 'image_stats')]
+    #[ORM\JoinColumn(nullable: false,name: "ce_protocole",referencedColumnName:"id_protocole")]
+    private ?DelImageProtocole $image_protocole = null;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="nb_votes", type="smallint", nullable=false, options={"unsigned"=true,"comment"="nombre de votes pour une image et un protocole donnÃ©"})
-     */
-    private $nbVotes = '0';
+    #[Groups(['image_stat'])]
+    #[ORM\Column(name: "moyenne", type: "float", precision: 10, scale: 0, nullable: false, options: ["comment" => "moyenne des votes pour une image et un protocole donné"])]
+    private float $moyenne = 0;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="nb_points", type="integer", nullable=false)
-     */
-    private $nbPoints = '0';
+    #[Groups(['image_stat'])]
+    #[ORM\Column(name: "nb_votes", type: "smallint", nullable: false, options: ["unsigned" => true, "comment" => "nombre de votes pour une image et un protocole donné"])]
+    private int $nbVotes = 0;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="nb_tags", type="boolean", nullable=false, options={"comment"="nombre de tags pictoflora pour une image donnÃ©e"})
-     */
-    private $nbTags = '0';
+    #[Groups(['image_stat'])]
+    #[ORM\Column(name: "nb_points", type: "integer", nullable: false)]
+    private int $nbPoints = 0;
 
-    public function getCeImage(): ?int
-    {
-        return $this->ceImage;
-    }
+    #[Groups(['image_stat'])]
+    #[ORM\Column(name: "nb_tags", type: "boolean", nullable: false, options: ["comment" => "nombre de tags pictoflora pour une image donnée"])]
+    private bool $nbTags = false;
 
-    public function isCeProtocole(): ?int
-    {
-        return $this->ceProtocole;
-    }
-
-    public function setCeProtocole(int $ce_protocole): static
-    {
-        $this->ceProtocole = $ce_protocole;
-
-        return $this;
+    public function __construct(){
+        
     }
 
     public function getMoyenne(): ?float
@@ -92,9 +67,9 @@ class DelImageStat
         return $this->nbVotes;
     }
 
-    public function setNbVotes(int $nb_votes): static
+    public function setNbVotes(int $nbVotes): static
     {
-        $this->nbVotes = $nb_votes;
+        $this->nbVotes = $nbVotes;
 
         return $this;
     }
@@ -104,21 +79,75 @@ class DelImageStat
         return $this->nbPoints;
     }
 
-    public function setNbPoints(int $nb_points): static
+    public function setNbPoints(int $nbPoints): static
     {
-        $this->nbPoints = $nb_points;
+        $this->nbPoints = $nbPoints;
 
         return $this;
     }
 
-    public function isNbTags(): ?int
+    public function isNbTags(): ?bool
     {
         return $this->nbTags;
     }
 
-    public function setNbTags(int $nb_tags): static
+    public function setNbTags(bool $nbTags): static
     {
-        $this->nbTags = $nb_tags;
+        $this->nbTags = $nbTags;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of image_protocole
+     */
+    public function getImageProtocole(): ?DelImageProtocole
+    {
+        return $this->image_protocole;
+    }
+
+    /**
+     * Set the value of image_protocole
+     */
+    public function setImageProtocole(?DelImageProtocole $image_protocole): self
+    {
+        $this->image_protocole = $image_protocole;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of image
+     */
+    public function getImage(): ?DelImage
+    {
+        return $this->image;
+    }
+
+    /**
+     * Set the value of image
+     */
+    public function setImage(?DelImage $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of ce_image
+     */
+    public function getCeImage(): int
+    {
+        return $this->ce_image;
+    }
+
+    /**
+     * Set the value of ce_image
+     */
+    public function setCeImage(int $ce_image): self
+    {
+        $this->ce_image = $ce_image;
 
         return $this;
     }

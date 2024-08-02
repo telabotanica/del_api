@@ -2,242 +2,184 @@
 
 namespace App\Entity;
 
+use App\Repository\DelUtilisateurInfosRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-/**
- * DelUtilisateurInfos
- *
- * @ORM\Table(name="del_utilisateur_infos", indexes={@ORM\Index(name="courriel_idx", columns={"courriel"})})
- * @ORM\Entity
- */
+#[ORM\Table(name: "del_utilisateur_infos")]
+#[ORM\Index(name: "courriel_idx", columns: ["courriel"])]
+#[ORM\Entity(repositoryClass: DelUtilisateurInfosRepository::class)]
 class DelUtilisateurInfos
-{
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id_utilisateur", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $idUtilisateur;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="intitule", type="string", length=128, nullable=true)
-     */
-    private $intitule;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="prenom", type="string", length=32, nullable=true)
-     */
-    private $prenom;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nom", type="string", length=32, nullable=true)
-     */
-    private $nom;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="courriel", type="string", length=128, nullable=true)
-     */
-    private $courriel;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="admin", type="boolean", nullable=false)
-     */
-    private $admin;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="preferences", type="text", length=0, nullable=false)
-     */
-    private $preferences;
-
-    /**
-     * @var \DateTimeImmutable|null
-     *
-     * @ORM\Column(name="date_premiere_utilisation", type="datetime", nullable=true)
-     */
-    private $datePremiereUtilisation;
-
-    /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(name="date_derniere_consultation_evenements", type="datetime", nullable=false)
-     */
-    private $dateDerniereConsultationEvenements;
-
+{   
+    #[Groups(['utilisateur_infos'])]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "AUTO")]
+    #[ORM\Column(name:"id_utilisateur",type: "integer")]
+    private int $id_utilisateur;
     
+    #[ORM\OneToOne(inversedBy: 'utilisateur_infos')]
+    #[ORM\JoinColumn(nullable: false,name:"id_utilisateur",referencedColumnName:"ID")]
+    private ?DelUtilisateur $utilisateurUI = null;
 
+    #[Groups(['utilisateur_infos'])]
+    #[ORM\Column(name: "intitule", type: "string", length: 128, nullable: true)]
+    private ?string $intitule = null;
 
-    /**
-     * Get the value of idUtilisateur
-     */
-    public function getIdUtilisateur(): int
+    #[Groups(['utilisateur_infos'])]
+    #[ORM\Column(name: "prenom", type: "string", length: 32, nullable: true)]
+    private ?string $prenom = null;
+
+    #[Groups(['utilisateur_infos'])]
+    #[ORM\Column(name: "nom", type: "string", length: 32, nullable: true)]
+    private ?string $nom = null;
+
+    #[Groups(['utilisateur_infos'])]
+    #[ORM\Column(name: "courriel", type: "string", length: 128, nullable: true)]
+    private ?string $courriel = null;
+
+    #[Groups(['utilisateur_infos'])]
+    #[ORM\Column(name: "admin", type: "boolean", nullable: false)]
+    private bool $admin;
+
+    #[Groups(['utilisateur_infos'])]
+    #[ORM\Column(name: "preferences", type: "text", nullable: false)]
+    private string $preferences;
+
+    #[Groups(['utilisateur_infos'])]
+    #[ORM\Column(name: "date_premiere_utilisation", type: "datetime", nullable: true)]
+    private ?\DateTime $datePremiereUtilisation = null;
+
+    #[Groups(['utilisateur_infos'])]
+    #[ORM\Column(name: "date_derniere_consultation_evenements", type: "datetime", nullable: true)]
+    private ?\DateTime $dateDerniereConsultationEvenements;
+
+    public function __construct()
     {
-        return $this->idUtilisateur;
+        $this->datePremiereUtilisation = new DateTime();
+        $this->dateDerniereConsultationEvenements = new DateTime();
     }
 
-    /**
-     * Set the value of idUtilisateur
-     */
-    public function setIdUtilisateur(int $idUtilisateur): self
-    {
-        $this->idUtilisateur = $idUtilisateur;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of intitule
-     */
     public function getIntitule(): ?string
     {
         return $this->intitule;
     }
 
-    /**
-     * Set the value of intitule
-     */
     public function setIntitule(?string $intitule): self
     {
         $this->intitule = $intitule;
-
         return $this;
     }
 
-    /**
-     * Get the value of prenom
-     */
     public function getPrenom(): ?string
     {
         return $this->prenom;
     }
 
-    /**
-     * Set the value of prenom
-     */
     public function setPrenom(?string $prenom): self
     {
         $this->prenom = $prenom;
-
         return $this;
     }
 
-    /**
-     * Get the value of nom
-     */
     public function getNom(): ?string
     {
         return $this->nom;
     }
 
-    /**
-     * Set the value of nom
-     */
     public function setNom(?string $nom): self
     {
         $this->nom = $nom;
-
         return $this;
     }
 
-    /**
-     * Get the value of courriel
-     */
     public function getCourriel(): ?string
     {
         return $this->courriel;
     }
 
-    /**
-     * Set the value of courriel
-     */
     public function setCourriel(?string $courriel): self
     {
         $this->courriel = $courriel;
-
         return $this;
     }
 
-    /**
-     * Get the value of admin
-     */
     public function isAdmin(): bool
     {
         return $this->admin;
     }
 
-    /**
-     * Set the value of admin
-     */
     public function setAdmin(bool $admin): self
     {
         $this->admin = $admin;
-
         return $this;
     }
 
-    /**
-     * Get the value of preferences
-     */
     public function getPreferences(): string
     {
         return $this->preferences;
     }
 
-    /**
-     * Set the value of preferences
-     */
     public function setPreferences(string $preferences): self
     {
         $this->preferences = $preferences;
-
         return $this;
     }
 
-    /**
-     * Get the value of datePremiereUtilisation
-     */
-    public function getDatePremiereUtilisation(): ?\DateTimeImmutable
+    public function getDatePremiereUtilisation(): ?\DateTime
     {
         return $this->datePremiereUtilisation;
     }
 
-    /**
-     * Set the value of datePremiereUtilisation
-     */
-    public function setDatePremiereUtilisation(?\DateTimeImmutable $datePremiereUtilisation): self
+    public function setDatePremiereUtilisation(?\DateTime $datePremiereUtilisation): self
     {
         $this->datePremiereUtilisation = $datePremiereUtilisation;
+        return $this;
+    }
+
+    public function getDateDerniereConsultationEvenements(): \DateTime
+    {
+        return $this->dateDerniereConsultationEvenements;
+    }
+
+    public function setDateDerniereConsultationEvenements(\DateTime $dateDerniereConsultationEvenements): self
+    {
+        $this->dateDerniereConsultationEvenements = $dateDerniereConsultationEvenements;
+        return $this;
+    }
+
+    /**
+     * Get the value of utilisateurUI
+     */
+    public function getUtilisateurUI(): ?DelUtilisateur
+    {
+        return $this->utilisateurUI;
+    }
+
+    /**
+     * Set the value of utilisateurUI
+     */
+    public function setUtilisateurUI(?DelUtilisateur $utilisateurUI): self
+    {
+        $this->utilisateurUI = $utilisateurUI;
 
         return $this;
     }
 
     /**
-     * Get the value of dateDerniereConsultationEvenements
+     * Get the value of id_utilisateur
      */
-    public function getDateDerniereConsultationEvenements(): \DateTimeImmutable
+    public function getIdUtilisateur(): int
     {
-        return $this->dateDerniereConsultationEvenements;
+        return $this->id_utilisateur;
     }
 
     /**
-     * Set the value of dateDerniereConsultationEvenements
+     * Set the value of id_utilisateur
      */
-    public function setDateDerniereConsultationEvenements(\DateTimeImmutable $dateDerniereConsultationEvenements): self
+    public function setIdUtilisateur(int $id_utilisateur): self
     {
-        $this->dateDerniereConsultationEvenements = $dateDerniereConsultationEvenements;
+        $this->id_utilisateur = $id_utilisateur;
 
         return $this;
     }

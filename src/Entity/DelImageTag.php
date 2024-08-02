@@ -2,161 +2,171 @@
 
 namespace App\Entity;
 
+use App\Repository\DelImageTagRepository;
 use Doctrine\ORM\Mapping as ORM;
+use DateTime;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-/**
- * DelImageTag
- *
- * @ORM\Table(name="del_image_tag", indexes={@ORM\Index(name="ce_utilisateur", columns={"ce_utilisateur"}), @ORM\Index(name="tag", columns={"tag"}), @ORM\Index(name="tag_normalise", columns={"tag_normalise"}), @ORM\Index(name="ce_image", columns={"ce_image"})})
- * @ORM\Entity
- */
+#[ORM\Table(name: "del_image_tag")]
+#[ORM\Index(name: "ce_utilisateur", columns: ["ce_utilisateur"])]
+#[ORM\Index(name: "tag", columns: ["tag"])]
+#[ORM\Index(name: "tag_normalise", columns: ["tag_normalise"])]
+#[ORM\Index(name: "ce_image", columns: ["ce_image"])]
+#[ORM\Entity(repositoryClass: DelImageTagRepository::class)]
+
 class DelImageTag
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id_tag", type="bigint", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $idTag;
+    #[Groups(['image_tag'])]
+    #[ORM\Column(name: "id_tag", type: "bigint", nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    private ?int $id_tag = null;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="ce_image", type="bigint", nullable=false)
-     */
-    private $ceImage;
+    #[ORM\ManyToOne(inversedBy: 'image_tags')]
+    #[ORM\JoinColumn(nullable: false,name: "ce_image",referencedColumnName:"id_image")]
+    private ?DelImage $image = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="ce_utilisateur", type="string", length=64, nullable=true)
-     */
-    private $ceUtilisateur;
+    #[ORM\ManyToOne(inversedBy: 'image_tags')]
+    #[ORM\JoinColumn(nullable: false,name: "ce_utilisateur",referencedColumnName:"ID")]
+    private ?DelUtilisateur $utilisateurIT = null;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="tag", type="string", length=255, nullable=false)
-     */
-    private $tag;
+    #[Groups(['image_tag'])]
+    #[ORM\Column(name: "tag", type: "string", length: 255, nullable: false)]
+    private string $tag;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="tag_normalise", type="string", length=255, nullable=false)
-     */
-    private $tagNormalise;
+    #[Groups(['image_tag'])]
+    #[ORM\Column(name: "tag_normalise", type: "string", length: 255, nullable: false)]
+    private string $tagNormalise;
 
-    /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(name="date", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP","comment"="Date de création du tag."})
-     */
-    private $date = 'CURRENT_TIMESTAMP';
+    #[Groups(['image_tag'])]
+    #[ORM\Column(name: "date", type: "datetime", nullable: false, options: ["default" => "CURRENT_TIMESTAMP", "comment" => "Date de création du tag."])]
+    private DateTime $date;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="actif", type="integer", nullable=false)
-     */
-    private $actif;
+    #[Groups(['image_tag'])]
+    #[ORM\Column(name: "actif", type: "integer", nullable: false)]
+    private int $actif;
 
-    /**
-     * @var \DateTimeImmutable|null
-     *
-     * @ORM\Column(name="date_modification", type="datetime", nullable=true)
-     */
-    private $dateModification;
+    #[Groups(['image_tag'])]
+    #[ORM\Column(name: "date_modification", type: "datetime", nullable: true)]
+    private ?DateTime $dateModification = null;
 
-    public function getIdTag(): ?int
-    {
-        return $this->idTag;
+    public function __construct(){
+        
+        $this->date= new DateTime();
+        $this->dateModification = new DateTime();
     }
 
-    public function getCeImage(): ?string
-    {
-        return $this->ceImage;
-    }
-
-    public function setCeImage(string $ce_image): static
-    {
-        $this->ceImage = $ce_image;
-
-        return $this;
-    }
-
-    public function getCeUtilisateur(): ?string
-    {
-        return $this->ceUtilisateur;
-    }
-
-    public function setCeUtilisateur(?string $ce_utilisateur): static
-    {
-        $this->ceUtilisateur = $ce_utilisateur;
-
-        return $this;
-    }
-
-    public function getTag(): ?string
+    public function getTag(): string
     {
         return $this->tag;
     }
 
-    public function setTag(string $tag): static
+    public function setTag(string $tag): self
     {
         $this->tag = $tag;
 
         return $this;
     }
 
-    public function getTagNormalise(): ?string
+    public function getTagNormalise(): string
     {
         return $this->tagNormalise;
     }
 
-    public function setTagNormalise(string $tag_normalise): static
+    public function setTagNormalise(string $tagNormalise): self
     {
-        $this->tagNormalise = $tag_normalise;
+        $this->tagNormalise = $tagNormalise;
 
         return $this;
     }
 
-    public function getDate(): ?\DateTimeImmutable
+    public function getDate(): DateTime
     {
         return $this->date;
     }
 
-    public function setDate(\DateTimeImmutable $date): static
+    public function setDate(DateTime $date): self
     {
         $this->date = $date;
 
         return $this;
     }
 
-    public function getActif(): ?int
+    public function getActif(): int
     {
         return $this->actif;
     }
 
-    public function setActif(int $actif): static
+    public function setActif(int $actif): self
     {
         $this->actif = $actif;
 
         return $this;
     }
 
-    public function getDateModification(): ?\DateTimeImmutable
+    public function getDateModification(): ?DateTime
     {
         return $this->dateModification;
     }
 
-    public function setDateModification(?\DateTimeImmutable $date_modification): static
+    public function setDateModification(?DateTime $dateModification): self
     {
-        $this->dateModification = $date_modification;
+        $this->dateModification = $dateModification;
 
         return $this;
     }
 
+    /**
+     * Get the value of image
+     */
+    public function getImage(): ?DelImage
+    {
+        return $this->image;
+    }
+
+    /**
+     * Set the value of image
+     */
+    public function setImage(?DelImage $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of utilisateurIT
+     */
+    public function getUtilisateurIT(): ?DelUtilisateur
+    {
+        return $this->utilisateurIT;
+    }
+
+    /**
+     * Set the value of utilisateurIT
+     */
+    public function setUtilisateurIT(?DelUtilisateur $utilisateurIT): self
+    {
+        $this->utilisateurIT = $utilisateurIT;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of id_tag
+     */
+    public function getIdTag(): ?int
+    {
+        return $this->id_tag;
+    }
+
+    /**
+     * Set the value of id_tag
+     */
+    public function setIdTag(?int $id_tag): self
+    {
+        $this->id_tag = $id_tag;
+
+        return $this;
+    }
 }

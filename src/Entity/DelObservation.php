@@ -3,255 +3,163 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Repository\DelObservationRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * DelObservation
- *
- * @ORM\Table(name="del_observation", indexes={@ORM\Index(name="courriel_utilisateur", columns={"courriel_utilisateur"}), @ORM\Index(name="nom_sel", columns={"nom_sel"}), @ORM\Index(name="nom_referentiel", columns={"nom_referentiel"}), @ORM\Index(name="certitude", columns={"certitude"}), @ORM\Index(name="nom_sel_nn", columns={"nom_sel_nn"}), @ORM\Index(name="nom_ret_nn", columns={"nom_ret_nn"}), @ORM\Index(name="source", columns={"input_source"}), @ORM\Index(name="ce_utilisateur", columns={"ce_utilisateur"})})
- * @ORM\Entity
  */
+#[ORM\Table(name: "del_observation")]
+#[ORM\Index(name: "courriel_utilisateur", columns: ["courriel_utilisateur"])]
+#[ORM\Index(name: "nom_sel", columns: ["nom_sel"])]
+#[ORM\Index(name: "nom_referentiel", columns: ["nom_referentiel"])]
+#[ORM\Index(name: "certitude", columns: ["certitude"])]
+#[ORM\Index(name: "nom_sel_nn", columns: ["nom_sel_nn"])]
+#[ORM\Index(name: "nom_ret_nn", columns: ["nom_ret_nn"])]
+#[ORM\Index(name: "source", columns: ["input_source"])]
+#[ORM\Index(name: "ce_utilisateur", columns: ["ce_utilisateur"])]
+#[ORM\Entity(repositoryClass: DelObservationRepository::class)]
+
 class DelObservation
-{
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id_observation", type="bigint", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $idObservation = '0';
+{   
+    #[ORM\Column(name: "id_observation", type: "bigint", nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    #[Groups(['observation'])]
+    private int $id_observation;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="ce_utilisateur", type="integer", nullable=true)
-     */
-    private $ceUtilisateur;
+    #[Groups(['utilisateur'])]
+    #[ORM\ManyToOne(inversedBy: 'observations',targetEntity:DelUtilisateur::class)]
+    #[ORM\JoinColumn(nullable: false,name: "ce_utilisateur",referencedColumnName:"ID")]
+    private ?DelUtilisateur $utilisateurO = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nom_utilisateur", type="string", length=155, nullable=true)
-     */
-    private $nomUtilisateur;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "nom_utilisateur", type: "string", length: 155, nullable: true)]
+    private ?string $nomUtilisateur = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="prenom_utilisateur", type="string", length=5, nullable=true)
-     */
-    private $prenomUtilisateur;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "prenom_utilisateur", type: "string", length: 5, nullable: true)]
+    private ?string $prenomUtilisateur = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="courriel_utilisateur", type="string", length=155, nullable=true)
-     */
-    private $courrielUtilisateur;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "courriel_utilisateur", type: "string", length: 155, nullable: true)]
+    private ?string $courrielUtilisateur = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nom_sel", type="string", length=255, nullable=true)
-     */
-    private $nomSel;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "nom_sel", type: "string", length: 255, nullable: true)]
+    private ?string $nomSel = null;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="nom_sel_nn", type="integer", nullable=true, options={"comment"="Numéro du nom sélectionné."})
-     */
-    private $nomSelNn;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "nom_sel_nn", type: "integer", nullable: true, options: ["comment" => "Numéro du nom sélectionné."])]
+    private ?int $nomSelNn = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nom_ret", type="string", length=255, nullable=true)
-     */
-    private $nomRet;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "nom_ret", type: "string", length: 255, nullable: true)]
+    private ?string $nomRet = null;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="nom_ret_nn", type="integer", nullable=true, options={"comment"="Numéro du nom retenu."})
-     */
-    private $nomRetNn;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "nom_ret_nn", type: "integer", nullable: true, options: ["comment" => "Numéro du nom retenu."])]
+    private ?int $nomRetNn = null;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="nt", type="integer", nullable=true, options={"comment"="Numéro du nom retenu."})
-     */
-    private $nt;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "nt", type: "integer", nullable: true, options: ["comment" => "Numéro du nom retenu."])]
+    private ?int $nt = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="famille", type="string", length=100, nullable=true)
-     */
-    private $famille;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "famille", type: "string", length: 100, nullable: true)]
+    private ?string $famille = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="ce_zone_geo", type="string", length=5, nullable=true)
-     */
-    private $ceZoneGeo;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "ce_zone_geo", type: "string", length: 5, nullable: true)]
+    private ?string $ceZoneGeo = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="zone_geo", type="string", length=255, nullable=true)
-     */
-    private $zoneGeo;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "zone_geo", type: "string", length: 255, nullable: true)]
+    private ?string $zoneGeo = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="lieudit", type="string", length=255, nullable=true)
-     */
-    private $lieudit;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "lieudit", type: "string", length: 255, nullable: true)]
+    private ?string $lieudit = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="station", type="string", length=255, nullable=true)
-     */
-    private $station;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "station", type: "string", length: 255, nullable: true)]
+    private ?string $station = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="milieu", type="string", length=255, nullable=true)
-     */
-    private $milieu;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "milieu", type: "string", length: 255, nullable: true)]
+    private ?string $milieu = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nom_referentiel", type="string", length=25, nullable=true)
-     */
-    private $nomReferentiel;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "nom_referentiel", type: "string", length: 25, nullable: true)]
+    private ?string $nomReferentiel = null;
 
-    /**
-     * @var \DateTimeImmutable|null
-     *
-     * @ORM\Column(name="date_observation", type="datetime", nullable=true)
-     */
-    private $dateObservation;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "date_observation", type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $dateObservation = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="mots_cles_texte", type="text", length=0, nullable=true, options={"comment"="Champ calculé contenant la liste des mots clés utilisateurs séparé par des virgules."})
-     */
-    private $motsClesTexte;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "mots_cles_texte", type: "text", nullable: true, options: ["comment" => "Champ calculé contenant la liste des mots clés utilisateurs séparé par des virgules."])]
+    private ?string $motsClesTexte = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="commentaire", type="text", length=65535, nullable=true)
-     */
-    private $commentaire;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "commentaire", type: "text", length: 65535, nullable: true)]
+    private ?string $commentaire = null;
 
-    /**
-     * @var \DateTimeImmutable|null
-     *
-     * @ORM\Column(name="date_creation", type="datetime", nullable=true)
-     */
-    private $dateCreation;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "date_creation", type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $dateCreation = null;
 
-    /**
-     * @var \DateTimeImmutable|null
-     *
-     * @ORM\Column(name="date_modification", type="datetime", nullable=true)
-     */
-    private $dateModification;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "date_modification", type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $dateModification = null;
 
-    /**
-     * @var \DateTimeImmutable|null
-     *
-     * @ORM\Column(name="date_transmission", type="datetime", nullable=true)
-     */
-    private $dateTransmission;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "date_transmission", type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $dateTransmission = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="certitude", type="string", length=25, nullable=true)
-     */
-    private $certitude;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "certitude", type: "string", length: 25, nullable: true)]
+    private ?string $certitude = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="pays", type="string", length=150, nullable=true, options={"comment"="Code de pays suivant le standard ISO 3166-2"})
-     */
-    private $pays;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "pays", type: "string", length: 150, nullable: true, options: ["comment" => "Code de pays suivant le standard ISO 3166-2"])]
+    private ?string $pays = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="input_source", type="string", length=15, nullable=true)
-     */
-    private $inputSource;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "input_source", type: "string", length: 15, nullable: true)]
+    private ?string $inputSource = null;
 
-    /**
-     * @var bool|null
-     *
-     * @ORM\Column(name="donnees_standard", type="boolean", nullable=true)
-     */
-    private $donneesStandard;
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "donnees_standard", type: "boolean", nullable: true)]
+    private ?bool $donneesStandard = null;
 
-    
+    #[Groups(['image'])]
+    #[ORM\OneToMany(mappedBy: 'observation', targetEntity: DelImage::class, orphanRemoval: true,cascade:['persist'])]
+    private Collection $images;
 
-    /**
-     * Get the value of idObservation
-     */
-    public function getIdObservation(): int
+    #[Groups(['commentaire'])]
+    #[ORM\OneToMany(mappedBy: 'observation', targetEntity: DelCommentaire::class, orphanRemoval: true,cascade:['persist'])]
+    private Collection $commentaires;
+
+    public function __construct()
     {
-        return $this->idObservation;
+        $this->dateCreation = new DateTimeImmutable();
+        $this->dateModification = new DateTimeImmutable();
+        $this->dateTransmission = new DateTimeImmutable();
+        $this->dateObservation = new DateTimeImmutable();
+        $this->images = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();
+        
     }
 
-    /**
-     * Set the value of idObservation
-     */
-    public function setIdObservation(int $idObservation): self
-    {
-        $this->idObservation = $idObservation;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of ceUtilisateur
-     */
-    public function getCeUtilisateur(): ?int
-    {
-        return $this->ceUtilisateur;
-    }
-
-    /**
-     * Set the value of ceUtilisateur
-     */
-    public function setCeUtilisateur(?int $ceUtilisateur): self
-    {
-        $this->ceUtilisateur = $ceUtilisateur;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of nomUtilisateur
-     */
     public function getNomUtilisateur(): ?string
     {
         return $this->nomUtilisateur;
     }
 
-    /**
-     * Set the value of nomUtilisateur
-     */
     public function setNomUtilisateur(?string $nomUtilisateur): self
     {
         $this->nomUtilisateur = $nomUtilisateur;
@@ -259,17 +167,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of prenomUtilisateur
-     */
     public function getPrenomUtilisateur(): ?string
     {
         return $this->prenomUtilisateur;
     }
 
-    /**
-     * Set the value of prenomUtilisateur
-     */
     public function setPrenomUtilisateur(?string $prenomUtilisateur): self
     {
         $this->prenomUtilisateur = $prenomUtilisateur;
@@ -277,17 +179,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of courrielUtilisateur
-     */
     public function getCourrielUtilisateur(): ?string
     {
         return $this->courrielUtilisateur;
     }
 
-    /**
-     * Set the value of courrielUtilisateur
-     */
     public function setCourrielUtilisateur(?string $courrielUtilisateur): self
     {
         $this->courrielUtilisateur = $courrielUtilisateur;
@@ -295,17 +191,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of nomSel
-     */
     public function getNomSel(): ?string
     {
         return $this->nomSel;
     }
 
-    /**
-     * Set the value of nomSel
-     */
     public function setNomSel(?string $nomSel): self
     {
         $this->nomSel = $nomSel;
@@ -313,17 +203,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of nomSelNn
-     */
     public function getNomSelNn(): ?int
     {
         return $this->nomSelNn;
     }
 
-    /**
-     * Set the value of nomSelNn
-     */
     public function setNomSelNn(?int $nomSelNn): self
     {
         $this->nomSelNn = $nomSelNn;
@@ -331,17 +215,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of nomRet
-     */
     public function getNomRet(): ?string
     {
         return $this->nomRet;
     }
 
-    /**
-     * Set the value of nomRet
-     */
     public function setNomRet(?string $nomRet): self
     {
         $this->nomRet = $nomRet;
@@ -349,17 +227,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of nomRetNn
-     */
     public function getNomRetNn(): ?int
     {
         return $this->nomRetNn;
     }
 
-    /**
-     * Set the value of nomRetNn
-     */
     public function setNomRetNn(?int $nomRetNn): self
     {
         $this->nomRetNn = $nomRetNn;
@@ -367,17 +239,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of nt
-     */
     public function getNt(): ?int
     {
         return $this->nt;
     }
 
-    /**
-     * Set the value of nt
-     */
     public function setNt(?int $nt): self
     {
         $this->nt = $nt;
@@ -385,17 +251,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of famille
-     */
     public function getFamille(): ?string
     {
         return $this->famille;
     }
 
-    /**
-     * Set the value of famille
-     */
     public function setFamille(?string $famille): self
     {
         $this->famille = $famille;
@@ -403,17 +263,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of ceZoneGeo
-     */
     public function getCeZoneGeo(): ?string
     {
         return $this->ceZoneGeo;
     }
 
-    /**
-     * Set the value of ceZoneGeo
-     */
     public function setCeZoneGeo(?string $ceZoneGeo): self
     {
         $this->ceZoneGeo = $ceZoneGeo;
@@ -421,17 +275,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of zoneGeo
-     */
     public function getZoneGeo(): ?string
     {
         return $this->zoneGeo;
     }
 
-    /**
-     * Set the value of zoneGeo
-     */
     public function setZoneGeo(?string $zoneGeo): self
     {
         $this->zoneGeo = $zoneGeo;
@@ -439,17 +287,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of lieudit
-     */
     public function getLieudit(): ?string
     {
         return $this->lieudit;
     }
 
-    /**
-     * Set the value of lieudit
-     */
     public function setLieudit(?string $lieudit): self
     {
         $this->lieudit = $lieudit;
@@ -457,17 +299,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of station
-     */
     public function getStation(): ?string
     {
         return $this->station;
     }
 
-    /**
-     * Set the value of station
-     */
     public function setStation(?string $station): self
     {
         $this->station = $station;
@@ -475,17 +311,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of milieu
-     */
     public function getMilieu(): ?string
     {
         return $this->milieu;
     }
 
-    /**
-     * Set the value of milieu
-     */
     public function setMilieu(?string $milieu): self
     {
         $this->milieu = $milieu;
@@ -493,17 +323,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of nomReferentiel
-     */
     public function getNomReferentiel(): ?string
     {
         return $this->nomReferentiel;
     }
 
-    /**
-     * Set the value of nomReferentiel
-     */
     public function setNomReferentiel(?string $nomReferentiel): self
     {
         $this->nomReferentiel = $nomReferentiel;
@@ -511,35 +335,23 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of dateObservation
-     */
-    public function getDateObservation(): ?\DateTimeImmutable
+    public function getDateObservation(): ?DateTimeImmutable
     {
         return $this->dateObservation;
     }
 
-    /**
-     * Set the value of dateObservation
-     */
-    public function setDateObservation(?\DateTimeImmutable $dateObservation): self
+    public function setDateObservation(?DateTimeImmutable $dateObservation): self
     {
         $this->dateObservation = $dateObservation;
 
         return $this;
     }
 
-    /**
-     * Get the value of motsClesTexte
-     */
     public function getMotsClesTexte(): ?string
     {
         return $this->motsClesTexte;
     }
 
-    /**
-     * Set the value of motsClesTexte
-     */
     public function setMotsClesTexte(?string $motsClesTexte): self
     {
         $this->motsClesTexte = $motsClesTexte;
@@ -547,17 +359,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of commentaire
-     */
     public function getCommentaire(): ?string
     {
         return $this->commentaire;
     }
 
-    /**
-     * Set the value of commentaire
-     */
     public function setCommentaire(?string $commentaire): self
     {
         $this->commentaire = $commentaire;
@@ -565,71 +371,47 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of dateCreation
-     */
-    public function getDateCreation(): ?\DateTimeImmutable
+    public function getDateCreation(): ?DateTimeImmutable
     {
         return $this->dateCreation;
     }
 
-    /**
-     * Set the value of dateCreation
-     */
-    public function setDateCreation(?\DateTimeImmutable $dateCreation): self
+    public function setDateCreation(?DateTimeImmutable $dateCreation): self
     {
         $this->dateCreation = $dateCreation;
 
         return $this;
     }
 
-    /**
-     * Get the value of dateModification
-     */
-    public function getDateModification(): ?\DateTimeImmutable
+    public function getDateModification(): ?DateTimeImmutable
     {
         return $this->dateModification;
     }
 
-    /**
-     * Set the value of dateModification
-     */
-    public function setDateModification(?\DateTimeImmutable $dateModification): self
+    public function setDateModification(?DateTimeImmutable $dateModification): self
     {
         $this->dateModification = $dateModification;
 
         return $this;
     }
 
-    /**
-     * Get the value of dateTransmission
-     */
-    public function getDateTransmission(): ?\DateTimeImmutable
+    public function getDateTransmission(): ?DateTimeImmutable
     {
         return $this->dateTransmission;
     }
 
-    /**
-     * Set the value of dateTransmission
-     */
-    public function setDateTransmission(?\DateTimeImmutable $dateTransmission): self
+    public function setDateTransmission(?DateTimeImmutable $dateTransmission): self
     {
         $this->dateTransmission = $dateTransmission;
 
         return $this;
     }
 
-    /**
-     * Get the value of certitude
-     */
     public function getCertitude(): ?string
     {
         return $this->certitude;
     }
 
-    /**
-     * Set the value of certitude
-     */
     public function setCertitude(?string $certitude): self
     {
         $this->certitude = $certitude;
@@ -637,17 +419,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of pays
-     */
     public function getPays(): ?string
     {
         return $this->pays;
     }
 
-    /**
-     * Set the value of pays
-     */
     public function setPays(?string $pays): self
     {
         $this->pays = $pays;
@@ -655,17 +431,11 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of inputSource
-     */
     public function getInputSource(): ?string
     {
         return $this->inputSource;
     }
 
-    /**
-     * Set the value of inputSource
-     */
     public function setInputSource(?string $inputSource): self
     {
         $this->inputSource = $inputSource;
@@ -673,20 +443,95 @@ class DelObservation
         return $this;
     }
 
-    /**
-     * Get the value of donneesStandard
-     */
-    public function isDonneesStandard(): ?bool
+    public function getDonneesStandard(): ?bool
     {
         return $this->donneesStandard;
     }
 
-    /**
-     * Set the value of donneesStandard
-     */
     public function setDonneesStandard(?bool $donneesStandard): self
     {
         $this->donneesStandard = $donneesStandard;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of images
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    /**
+     * Set the value of images
+     */
+    public function addImages(DelImage $image): self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setObservation($this);
+        }
+
+        return $this;
+    
+    }
+
+
+    /**
+     * Get the value of commentaires
+     */
+    public function getCommentaires(): Collection
+    {
+        return $this->commentaires;
+    }
+
+    /**
+     * Set the value of commentaires
+     */
+    public function addCommentaires(DelCommentaire $commentaire): self
+    {
+        if (!$this->commentaires->contains($commentaire)) {
+            $this->commentaires->add($commentaire);
+            $commentaire->setObservation($this);
+        }
+        
+
+        return $this;
+    }
+
+    /**
+     * Get the value of utilisateurO
+     */
+    public function getUtilisateurO(): ?DelUtilisateur
+    {
+        return $this->utilisateurO;
+    }
+
+    /**
+     * Set the value of utilisateurO
+     */
+    public function setUtilisateurO(?DelUtilisateur $utilisateurO): self
+    {
+        $this->utilisateurO = $utilisateurO;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of id_observation
+     */
+    public function getIdObservation(): int
+    {
+        return $this->id_observation;
+    }
+
+    /**
+     * Set the value of id_observation
+     */
+    public function setIdObservation(int $id_observation): self
+    {
+        $this->id_observation = $id_observation;
 
         return $this;
     }

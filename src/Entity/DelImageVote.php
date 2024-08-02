@@ -2,167 +2,143 @@
 
 namespace App\Entity;
 
+use App\Repository\DelImageVoteRepository;
 use Doctrine\ORM\Mapping as ORM;
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-/**
- * DelImageVote
- *
- * @ORM\Table(name="del_image_vote", indexes={@ORM\Index(name="ce_image", columns={"ce_image"}), @ORM\Index(name="ce_protocole", columns={"ce_protocole"}), @ORM\Index(name="ce_utilisateur", columns={"ce_utilisateur"})})
- * @ORM\Entity
- */
+#[ORM\Table(name: "del_image_vote")]
+#[ORM\Index(name: "ce_image", columns: ["ce_image"])]
+#[ORM\Index(name: "ce_protocole", columns: ["ce_protocole"])]
+#[ORM\Index(name: "ce_utilisateur", columns: ["ce_utilisateur"])]
+#[ORM\Entity(repositoryClass: DelImageVoteRepository::class)]
 class DelImageVote
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id_vote", type="bigint", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $idVote;
+    #[Groups(['image_vote'])]
+    #[ORM\Column(name: "id_vote", type: "bigint", nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    private ?int $id_vote = null;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="ce_image", type="bigint", nullable=false)
-     */
-    private $ceImage;
+    #[ORM\ManyToOne(inversedBy: 'image_votes')]
+    #[ORM\JoinColumn(nullable: false,name: "ce_image",referencedColumnName:"id_image")]
+    private ?DelImage $image = null;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="ce_protocole", type="integer", nullable=false)
-     */
-    private $ceProtocole;
+    #[ORM\ManyToOne(inversedBy: 'image_votes')]
+    #[ORM\JoinColumn(nullable: false,name: "ce_protocole",referencedColumnName:"id_protocole")]
+    private ?DelImageProtocole $image_protocole = null;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="ce_utilisateur", type="string", length=32, nullable=false, options={"comment"="Identifiant de session ou id utilisateur."})
-     */
-    private $ceUtilisateur;
+    #[ORM\ManyToOne(inversedBy: 'image_votes')]
+    #[ORM\JoinColumn(nullable: false,name: "ce_utilisateur",referencedColumnName:"ID")]
+    private ?DelUtilisateur $utilisateurIV = null;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="valeur", type="boolean", nullable=false)
-     */
-    private $valeur;
+    #[Groups(['image_vote'])]
+    #[ORM\Column(name: "valeur", type: "boolean", nullable: false)]
+    private bool $valeur;
 
-    /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(name="date", type="datetime", nullable=false)
-     */
-    private $date;
+    #[Groups(['image_vote'])]
+    #[ORM\Column(name: "date", type: "datetime", nullable: false)]
+    private DateTime $date;
 
-    
-
-
-    /**
-     * Get the value of idVote
-     */
-    public function getIdVote(): int
+    public function __construct()
     {
-        return $this->idVote;
+        $this->date = new DateTime();
+        
     }
 
-    /**
-     * Set the value of idVote
-     */
-    public function setIdVote(int $idVote): self
-    {
-        $this->idVote = $idVote;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of ceImage
-     */
-    public function getCeImage(): int
-    {
-        return $this->ceImage;
-    }
-
-    /**
-     * Set the value of ceImage
-     */
-    public function setCeImage(int $ceImage): self
-    {
-        $this->ceImage = $ceImage;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of ceProtocole
-     */
-    public function getCeProtocole(): int
-    {
-        return $this->ceProtocole;
-    }
-
-    /**
-     * Set the value of ceProtocole
-     */
-    public function setCeProtocole(int $ceProtocole): self
-    {
-        $this->ceProtocole = $ceProtocole;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of ceUtilisateur
-     */
-    public function getCeUtilisateur(): string
-    {
-        return $this->ceUtilisateur;
-    }
-
-    /**
-     * Set the value of ceUtilisateur
-     */
-    public function setCeUtilisateur(string $ceUtilisateur): self
-    {
-        $this->ceUtilisateur = $ceUtilisateur;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of valeur
-     */
     public function isValeur(): bool
     {
         return $this->valeur;
     }
 
-    /**
-     * Set the value of valeur
-     */
     public function setValeur(bool $valeur): self
     {
         $this->valeur = $valeur;
+        return $this;
+    }
+
+    public function getDate(): DateTime
+    {
+        return $this->date;
+    }
+
+    public function setDate(DateTime $date): self
+    {
+        $this->date = $date;
+        return $this;
+    }
+
+    /**
+     * Get the value of image
+     */
+    public function getImage(): ?DelImage
+    {
+        return $this->image;
+    }
+
+    /**
+     * Set the value of image
+     */
+    public function setImage(?DelImage $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+
+    /**
+     * Get the value of image_protocole
+     */
+    public function getImageProtocole(): ?DelImageProtocole
+    {
+        return $this->image_protocole;
+    }
+
+    /**
+     * Set the value of image_protocole
+     */
+    public function setImageProtocole(?DelImageProtocole $image_protocole): self
+    {
+        $this->image_protocole = $image_protocole;
 
         return $this;
     }
 
     /**
-     * Get the value of date
+     * Get the value of utilisateurIV
      */
-    public function getDate(): \DateTimeImmutable
+    public function getUtilisateurIV(): ?DelUtilisateur
     {
-        return $this->date;
+        return $this->utilisateurIV;
     }
 
     /**
-     * Set the value of date
+     * Set the value of utilisateurIV
      */
-    public function setDate(\DateTimeImmutable $date): self
+    public function setUtilisateurIV(?DelUtilisateur $utilisateurIV): self
     {
-        $this->date = $date;
+        $this->utilisateurIV = $utilisateurIV;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of id_vote
+     */
+    public function getIdVote(): ?int
+    {
+        return $this->id_vote;
+    }
+
+    /**
+     * Set the value of id_vote
+     */
+    public function setIdVote(?int $id_vote): self
+    {
+        $this->id_vote = $id_vote;
 
         return $this;
     }

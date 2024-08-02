@@ -2,90 +2,116 @@
 
 namespace App\Entity;
 
+use App\Repository\DelCommentaireVoteRepository;
 use Doctrine\ORM\Mapping as ORM;
+use DateTime;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-/**
- * DelCommentaireVote
- *
- * @ORM\Table(name="del_commentaire_vote", indexes={@ORM\Index(name="ce_proposition", columns={"ce_proposition"}), @ORM\Index(name="ce_utilisateur", columns={"ce_utilisateur"})})
- * @ORM\Entity
- */
+#[ORM\Table(name: "del_commentaire_vote")]
+#[ORM\Index(name: "ce_proposition", columns: ["ce_proposition"])]
+#[ORM\Index(name: "ce_utilisateur", columns: ["ce_utilisateur"])]
+#[ORM\Entity(repositoryClass: DelCommentaireVoteRepository::class)]
 class DelCommentaireVote
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id_vote", type="bigint", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $idVote;
+    #[Groups(['commentaire_vote'])]
+    #[ORM\Id]
+    #[ORM\Column(name: "id_vote", type: "bigint", nullable: false)]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    private ?int $id_vote = null;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="ce_proposition", type="bigint", nullable=false)
-     */
-    private $ceProposition;
+    #[ORM\ManyToOne(inversedBy: 'commentaire_votes')]
+    #[ORM\JoinColumn(nullable: false,name: "ce_proposition",referencedColumnName:"id_commentaire")]
+    private ?DelCommentaire $commentaire = null;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="ce_utilisateur", type="string", length=32, nullable=false, options={"comment"="Identifiant de session ou id de l'utilisateur."})
-     */
-    private $ceUtilisateur = '0';
+    #[ORM\ManyToOne(inversedBy: 'commentaire_votes')]
+    #[ORM\JoinColumn(nullable: false,name: "ce_utilisateur",referencedColumnName:"ID")]
+    private ?DelUtilisateur $utilisateurCV = null;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="valeur", type="boolean", nullable=false)
-     */
-    private $valeur;
+    #[Groups(['commentaire_vote'])]
+    #[ORM\Column(name: "valeur", type: "boolean", nullable: false)]
+    private bool $valeur;
 
-    /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(name="date", type="datetime", nullable=false)
-     */
-    private $date;
+    #[Groups(['commentaire_vote'])]
+    #[ORM\Column(name: "date", type: "datetime", nullable: false)]
+    private ?\DateTime $date;
 
-    public function getIdVote(): ?int
+    public function __construct()
     {
-        return $this->idVote;
+        $this->date = new DateTime();
+    }
+    
+    public function getValeur(): bool
+    {
+        return $this->valeur;
     }
 
-    public function getCeProposition(): ?string
+    public function setValeur(bool $valeur): self
     {
-        return $this->ceProposition;
-    }
-
-    public function setCeProposition(string $ce_proposition): static
-    {
-        $this->ceProposition = $ce_proposition;
-
+        $this->valeur = $valeur;
         return $this;
     }
 
-    public function getCeUtilisateur(): ?string
-    {
-        return $this->ceUtilisateur;
-    }
-
-    public function setCeUtilisateur(string $ce_utilisateur): static
-    {
-        $this->ceUtilisateur = $ce_utilisateur;
-
-        return $this;
-    }
-
-    public function getDate(): ?\DateTimeImmutable
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
 
-    public function setDate(\DateTimeImmutable $date): static
+    public function setDate(\DateTime $date): self
     {
         $this->date = $date;
+        return $this;
+    }
+
+    /**
+     * Get the value of commentaire
+     */
+    public function getCommentaire(): ?DelCommentaire
+    {
+        return $this->commentaire;
+    }
+
+    /**
+     * Set the value of commentaire
+     */
+    public function setCommentaire(?DelCommentaire $commentaire): self
+    {
+        $this->commentaire = $commentaire;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of utilisateurCV
+     */
+    public function getUtilisateurCV(): ?DelUtilisateur
+    {
+        return $this->utilisateurCV;
+    }
+
+    /**
+     * Set the value of utilisateurCV
+     */
+    public function setUtilisateurCV(?DelUtilisateur $utilisateurCV): self
+    {
+        $this->utilisateurCV = $utilisateurCV;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of id_vote
+     */
+    public function getIdVote(): ?int
+    {
+        return $this->id_vote;
+    }
+
+    /**
+     * Set the value of id_vote
+     */
+    public function setIdVote(?int $id_vote): self
+    {
+        $this->id_vote = $id_vote;
 
         return $this;
     }

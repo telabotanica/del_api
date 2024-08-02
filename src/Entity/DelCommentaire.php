@@ -2,204 +2,123 @@
 
 namespace App\Entity;
 
+use App\Repository\DelCommentaireRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use DateTime;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-/**
- * DelCommentaire
- *
- * @ORM\Table(name="del_commentaire", indexes={@ORM\Index(name="ce_commentaire_parent_2", columns={"ce_commentaire_parent"}), @ORM\Index(name="ce_proposition", columns={"ce_proposition"}), @ORM\Index(name="ce_utilisateur", columns={"ce_utilisateur"}), @ORM\Index(name="ce_observation", columns={"ce_observation"}), @ORM\Index(name="ce_commentaire_parent", columns={"ce_commentaire_parent"})})
- * @ORM\Entity
- */
+#[ORM\Table(name: "del_commentaire")]
+#[ORM\Index(name: "ce_proposition", columns: ["ce_proposition"])]
+#[ORM\Index(name: 'ce_utilisateur', columns: ['ce_utilisateur'])]
+#[ORM\Index(name: "ce_observation", columns: ["ce_observation"])]
+#[ORM\Index(name: "ce_commentaire_parent", columns: ["ce_commentaire_parent"])]
+#[ORM\Entity(repositoryClass: DelCommentaireRepository::class)]
 class DelCommentaire
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id_commentaire", type="bigint", nullable=false, options={"comment"="identifiant d'un commentaire ou d'une proposition"})
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $idCommentaire;
+    #[Groups(['commentaire'])]
+    #[ORM\Id]
+    #[ORM\Column(name: "id_commentaire", type: "bigint", nullable: false, options: ["comment" => "identifiant d'un commentaire ou d'une proposition"])]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    private ?int $id_commentaire = null;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="ce_observation", type="bigint", nullable=false)
-     */
-    private $ceObservation;
+    #[ORM\ManyToOne(inversedBy: 'commentaires')]
+    #[ORM\JoinColumn(nullable: false,name:"ce_observation",referencedColumnName:"id_observation")]
+    private ?DelObservation $observation = null;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="ce_proposition", type="integer", nullable=true, options={"comment"="id_commentaire de la proposition à laquelle est liée le commentaire"})
-     */
-    private $ceProposition = '0';
+  
+    #[ORM\ManyToOne(inversedBy: 'commentaires')]
+    #[ORM\JoinColumn(nullable: true,name: "ce_proposition",referencedColumnName:"id_commentaire")]
+    private ?DelCommentaire $commentaireP = null;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="ce_commentaire_parent", type="bigint", nullable=true, options={"comment"="id_commentaire du commentaire ou de la proposition parent"})
-     */
-    private $ceCommentaireParent = '0';
+    
+    #[ORM\ManyToOne(inversedBy: 'commentaires')]
+    #[ORM\JoinColumn(nullable: false,name: "ce_commentaire_parent",referencedColumnName:"id_commentaire")]
+    private ?DelCommentaire $commentaire = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="texte", type="text", length=65535, nullable=true)
-     */
-    private $texte;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "texte", type: "text", length: 65535, nullable: true)]
+    private ?string $texte = null;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="ce_utilisateur", type="integer", nullable=true)
-     */
-    private $ceUtilisateur = '0';
+    #[ORM\ManyToOne(inversedBy: 'commentaires')]
+    #[ORM\JoinColumn(nullable: false,name:"ce_utilisateur",referencedColumnName:"ID")]
+    private ?DelUtilisateur $utilisateurC = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="utilisateur_prenom", type="string", length=255, nullable=true)
-     */
-    private $utilisateurPrenom;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "utilisateur_prenom", type: "string", length: 255, nullable: true)]
+    private ?string $utilisateurPrenom = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="utilisateur_nom", type="string", length=255, nullable=true)
-     */
-    private $utilisateurNom;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "utilisateur_nom", type: "string", length: 255, nullable: true)]
+    private ?string $utilisateurNom = null;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="utilisateur_courriel", type="string", length=255, nullable=false)
-     */
-    private $utilisateurCourriel;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "utilisateur_courriel", type: "string", length: 255, nullable: false)]
+    private string $utilisateurCourriel;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nom_sel", type="string", length=255, nullable=true, options={"comment"="contient ce qu'il a été saisi dans le cel pas forcement nom latin"})
-     */
-    private $nomSel;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "nom_sel", type: "string", length: 255, nullable: true, options: ["comment" => "contient ce qu'il a été saisi dans le cel pas forcement nom latin"])]
+    private ?string $nomSel = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nom_sel_nn", type="decimal", precision=9, scale=0, nullable=true, options={"comment"="attention peut être null ou 0 si pas de valeur"})
-     */
-    private $nomSelNn;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "nom_sel_nn", type: "decimal", precision: 9, scale: 0, nullable: true, options: ["comment" => "attention peut être null ou 0 si pas de valeur"])]
+    private ?string $nomSelNn = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nom_ret", type="string", length=255, nullable=true, options={"comment"="nom retenu du référentiel"})
-     */
-    private $nomRet;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "nom_ret", type: "string", length: 255, nullable: true, options: ["comment" => "nom retenu du référentiel"])]
+    private ?string $nomRet = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nom_ret_nn", type="decimal", precision=9, scale=0, nullable=true)
-     */
-    private $nomRetNn;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "nom_ret_nn", type: "decimal", precision: 9, scale: 0, nullable: true)]
+    private ?string $nomRetNn = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nt", type="decimal", precision=9, scale=0, nullable=true)
-     */
-    private $nt;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "nt", type: "decimal", precision: 9, scale: 0, nullable: true)]
+    private ?string $nt = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="famille", type="string", length=255, nullable=true)
-     */
-    private $famille;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "famille", type: "string", length: 255, nullable: true)]
+    private ?string $famille = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nom_referentiel", type="string", length=255, nullable=true)
-     */
-    private $nomReferentiel;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "nom_referentiel", type: "string", length: 255, nullable: true)]
+    private ?string $nomReferentiel = null;
 
-    /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(name="date", type="datetime", nullable=false, options={"comment"="Date de création du commentaire."})
-     */
-    private $date;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "date", type: "datetime", nullable: false, options: ["comment" => "Date de création du commentaire."])]
+    private ?\DateTime $date;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="proposition_initiale", type="integer", nullable=false)
-     */
-    private $propositionInitiale = '0';
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "proposition_initiale", type: "integer", nullable: false)]
+    private int $propositionInitiale = 0;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="proposition_retenue", type="integer", nullable=false, options={"comment"="proposition qui peut être initiale ou non et qui a été validé par l'auteur comme nom"})
-     */
-    private $propositionRetenue = '0';
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "proposition_retenue", type: "integer", nullable: false, options: ["comment" => "proposition qui peut être initiale ou non et qui a été validé par l'auteur comme nom"])]
+    private int $propositionRetenue = 0;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="ce_validateur", type="integer", nullable=true)
-     */
-    private $ceValidateur;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "ce_validateur", type: "integer", nullable: true)]
+    private ?int $ceValidateur = null;
 
-    /**
-     * @var \DateTimeImmutable|null
-     *
-     * @ORM\Column(name="date_validation", type="datetime", nullable=true)
-     */
-    private $dateValidation;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "date_validation", type: "datetime", nullable: true)]
+    private ?\DateTime $dateValidation = null;
 
-    public function getIdCommentaire(): ?int
+    #[Groups(['commentaire_vote'])]
+    #[ORM\OneToMany(mappedBy: 'commentaire', targetEntity: DelCommentaireVote::class, orphanRemoval: true,cascade:['persist'])]
+    private Collection $commentaire_votes;
+
+    #[Groups(['commentaire_vote'])]
+    #[ORM\OneToMany(mappedBy: 'commentaire', targetEntity: DelCommentaire::class)]
+    private Collection $commentaires;
+
+    public function __construct()
     {
-        return $this->idCommentaire;
-    }
-
-    public function getCeObservation(): ?int
-    {
-        return $this->ceObservation;
-    }
-
-    public function setCeObservation(?int $ceObservation): static
-    {
-        $this->ceObservation = $ceObservation;
-
-        return $this;
-    }
-
-    public function getCeProposition(): ?int
-    {
-        return $this->ceProposition;
-    }
-
-    public function setCeProposition(?int $ce_proposition): static
-    {
-        $this->ceProposition = $ce_proposition;
-
-        return $this;
-    }
-
-    public function getCeCommentaireParent(): ?string
-    {
-        return $this->ceCommentaireParent;
-    }
-
-    public function setCeCommentaireParent(?string $ce_commentaire_parent): static
-    {
-        $this->ceCommentaireParent = $ce_commentaire_parent;
-
-        return $this;
+        $this->date = new DateTime();
+        $this->dateValidation = new DateTime();
+        $this->commentaire_votes = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();
     }
 
     public function getTexte(): ?string
@@ -207,34 +126,20 @@ class DelCommentaire
         return $this->texte;
     }
 
-    public function setTexte(?string $texte): static
+    public function setTexte(?string $texte): self
     {
         $this->texte = $texte;
-
         return $this;
     }
 
-    public function getCeUtilisateur(): ?int
-    {
-        return $this->ceUtilisateur;
-    }
-
-    public function setCeUtilisateur(?int $ce_utilisateur): static
-    {
-        $this->ceUtilisateur = $ce_utilisateur;
-
-        return $this;
-    }
-
-    public function getUtilisateurPrenom(): ?int
+    public function getUtilisateurPrenom(): ?string
     {
         return $this->utilisateurPrenom;
     }
 
-    public function setUtilisateurPrenom(?int $utilisateur_prenom): static
+    public function setUtilisateurPrenom(?string $utilisateurPrenom): self
     {
-        $this->utilisateurPrenom = $utilisateur_prenom;
-
+        $this->utilisateurPrenom = $utilisateurPrenom;
         return $this;
     }
 
@@ -243,22 +148,20 @@ class DelCommentaire
         return $this->utilisateurNom;
     }
 
-    public function setUtilisateurNom(?string $utilisateur_nom): static
+    public function setUtilisateurNom(?string $utilisateurNom): self
     {
-        $this->utilisateurNom = $utilisateur_nom;
-
+        $this->utilisateurNom = $utilisateurNom;
         return $this;
     }
 
-    public function getUtilisateurCourriel(): ?string
+    public function getUtilisateurCourriel(): string
     {
         return $this->utilisateurCourriel;
     }
 
-    public function setUtilisateurCourriel(string $utilisateur_courriel): static
+    public function setUtilisateurCourriel(string $utilisateurCourriel): self
     {
-        $this->utilisateurCourriel = $utilisateur_courriel;
-
+        $this->utilisateurCourriel = $utilisateurCourriel;
         return $this;
     }
 
@@ -267,10 +170,9 @@ class DelCommentaire
         return $this->nomSel;
     }
 
-    public function setNomSel(?string $nom_sel): static
+    public function setNomSel(?string $nomSel): self
     {
-        $this->nomSel = $nom_sel;
-
+        $this->nomSel = $nomSel;
         return $this;
     }
 
@@ -279,10 +181,9 @@ class DelCommentaire
         return $this->nomSelNn;
     }
 
-    public function setNomSelNn(?string $nom_sel_nn): static
+    public function setNomSelNn(?string $nomSelNn): self
     {
-        $this->nomSelNn = $nom_sel_nn;
-
+        $this->nomSelNn = $nomSelNn;
         return $this;
     }
 
@@ -291,10 +192,9 @@ class DelCommentaire
         return $this->nomRet;
     }
 
-    public function setNomRet(?string $nom_ret): static
+    public function setNomRet(?string $nomRet): self
     {
-        $this->nomRet = $nom_ret;
-
+        $this->nomRet = $nomRet;
         return $this;
     }
 
@@ -303,10 +203,9 @@ class DelCommentaire
         return $this->nomRetNn;
     }
 
-    public function setNomRetNn(string $nom_ret_nn): static
+    public function setNomRetNn(?string $nomRetNn): self
     {
-        $this->nomRetNn = $nom_ret_nn;
-
+        $this->nomRetNn = $nomRetNn;
         return $this;
     }
 
@@ -315,10 +214,9 @@ class DelCommentaire
         return $this->nt;
     }
 
-    public function setNt(?string $nt): static
+    public function setNt(?string $nt): self
     {
         $this->nt = $nt;
-
         return $this;
     }
 
@@ -327,10 +225,9 @@ class DelCommentaire
         return $this->famille;
     }
 
-    public function setFamille(?string $famille): static
+    public function setFamille(?string $famille): self
     {
         $this->famille = $famille;
-
         return $this;
     }
 
@@ -339,46 +236,42 @@ class DelCommentaire
         return $this->nomReferentiel;
     }
 
-    public function setNomReferentiel(?string $nom_referentiel): static
+    public function setNomReferentiel(?string $nomReferentiel): self
     {
-        $this->nomReferentiel = $nom_referentiel;
-
+        $this->nomReferentiel = $nomReferentiel;
         return $this;
     }
 
-    public function getDate(): ?\DateTimeImmutable
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
 
-    public function setDate(\DateTimeImmutable $date): static
+    public function setDate(\DateTime $date): self
     {
         $this->date = $date;
-
         return $this;
     }
 
-    public function getPropositionInitiale(): ?int
+    public function getPropositionInitiale(): int
     {
         return $this->propositionInitiale;
     }
 
-    public function setPropositionInitiale(int $proposition_initiale): static
+    public function setPropositionInitiale(int $propositionInitiale): self
     {
-        $this->propositionInitiale = $proposition_initiale;
-
+        $this->propositionInitiale = $propositionInitiale;
         return $this;
     }
 
-    public function getPropositionRetenue(): ?int
+    public function getPropositionRetenue(): int
     {
         return $this->propositionRetenue;
     }
 
-    public function setPropositionRetenue(int $proposition_retenue): static
+    public function setPropositionRetenue(int $propositionRetenue): self
     {
-        $this->propositionRetenue = $proposition_retenue;
-
+        $this->propositionRetenue = $propositionRetenue;
         return $this;
     }
 
@@ -387,23 +280,152 @@ class DelCommentaire
         return $this->ceValidateur;
     }
 
-    public function setCeValidateur(?int $ce_validateur): static
+    public function setCeValidateur(?int $ceValidateur): self
     {
-        $this->ceValidateur = $ce_validateur;
-
+        $this->ceValidateur = $ceValidateur;
         return $this;
     }
 
-    public function getDateValidation(): ?\DateTimeImmutable
+    public function getDateValidation(): ?\DateTime
     {
         return $this->dateValidation;
     }
 
-    public function setDateValidation(?\DateTimeImmutable $date_validation): static
+    public function setDateValidation(?\DateTime $dateValidation): self
     {
-        $this->dateValidation = $date_validation;
+        $this->dateValidation = $dateValidation;
+        return $this;
+    }
+
+    /**
+     * Get the value of observation
+     */
+    public function getObservation(): ?DelObservation
+    {
+        return $this->observation;
+    }
+
+    /**
+     * Set the value of observation
+     */
+    public function setObservation(?DelObservation $observation): self
+    {
+        $this->observation = $observation;
 
         return $this;
     }
 
+    /**
+     * Get the value of commentaire_votes
+     */
+    public function getCommentaireVotes(): Collection
+    {
+        return $this->commentaire_votes;
+    }
+
+    /**
+     * Set the value of commentaire_votes
+     */
+    public function addCommentaireVotes(DelCommentaireVote $commentaire_vote): self
+    {
+        if (!$this->commentaire_votes->contains($commentaire_vote)) {
+            $this->commentaires->add($commentaire_vote);
+            $commentaire_vote->setCommentaire($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the value of commentaires
+     */
+    public function getCommentaires(): Collection
+    {
+        return $this->commentaires;
+    }
+
+    /**
+     * Set the value of commentaires
+     */
+    public function addCommentaires(DelCommentaire $commentaire): self
+    {
+        if (!$this->commentaires->contains($commentaire)) {
+            $this->commentaires->add($commentaire);
+            $commentaire->setCommentaire($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the value of commentaire
+     */
+    public function getCommentaire(): ?DelCommentaire
+    {
+        return $this->commentaire;
+    }
+
+    /**
+     * Set the value of commentaire
+     */
+    public function setCommentaire(?DelCommentaire $commentaire): self
+    {
+        $this->commentaire = $commentaire;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of utilisateurC
+     */
+    public function getUtilisateurC(): ?DelUtilisateur
+    {
+        return $this->utilisateurC;
+    }
+
+    /**
+     * Set the value of utilisateurC
+     */
+    public function setUtilisateurC(?DelUtilisateur $utilisateurC): self
+    {
+        $this->utilisateurC = $utilisateurC;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of id_commentaire
+     */
+    public function getIdCommentaire(): ?int
+    {
+        return $this->id_commentaire;
+    }
+
+    /**
+     * Set the value of id_commentaire
+     */
+    public function setIdCommentaire(?int $id_commentaire): self
+    {
+        $this->id_commentaire = $id_commentaire;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of commentaireP
+     */
+    public function getCommentaireP(): ?DelCommentaire
+    {
+        return $this->commentaireP;
+    }
+
+    /**
+     * Set the value of commentaireP
+     */
+    public function setCommentaireP(?DelCommentaire $commentaireP): self
+    {
+        $this->commentaireP = $commentaireP;
+
+        return $this;
+    }
 }

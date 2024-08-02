@@ -2,417 +2,368 @@
 
 namespace App\Entity;
 
+use App\Repository\DelImageRepository;
 use Doctrine\ORM\Mapping as ORM;
-use \DateTimeImmutable;
-
+use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use DateTime;
+use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * DelImage
- *
- * @ORM\Table(name="del_image")
- * @ORM\Entity
  */
+
+#[ORM\Table(name: "del_image")]
+#[ORM\Entity(repositoryClass: DelImageRepository::class)]
 class DelImage
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id_image", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $idImage = '0';
+    #[Groups(['image'])]
+    #[ORM\Column(name: "id_image", type: "integer", nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    private int $id_image = 0;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="ce_observation", type="integer", nullable=true)
-     */
-    private $ceObservation;
+    
+    #[ORM\ManyToOne(inversedBy: 'images')]
+    #[ORM\JoinColumn(name:"ce_observation",nullable: false,referencedColumnName:"id_observation")]
+    private ?DelObservation $observation = null;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="ce_utilisateur", type="integer", nullable=true)
-     */
-    private $ceUtilisateur;
+    #[ORM\ManyToOne(inversedBy: 'images')]
+    #[ORM\JoinColumn(name:"ce_utilisateur",nullable: false,referencedColumnName:"ID")]
+    private ?DelUtilisateur $utilisateur = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nom_utilisateur", type="string", length=155, nullable=true)
-     */
-    private $nomUtilisateur;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "ce_utilisateur", type: "integer", nullable: true)]
+    private ?int $ceUtilisateur = null;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="prenom_utilisateur", type="text", nullable=false)
-     */
-    private $prenomUtilisateur;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "nom_utilisateur", type: "string", length: 155, nullable: true)]
+    private ?string $nomUtilisateur = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="courriel_utilisateur", type="string", length=155, nullable=true)
-     */
-    private $courrielUtilisateur;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "prenom_utilisateur", type: "text", nullable: false)]
+    private string $prenomUtilisateur;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="hauteur", type="string", length=4, nullable=false)
-     */
-    private $hauteur;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "courriel_utilisateur", type: "string", length: 155, nullable: true)]
+    private ?string $courrielUtilisateur = null;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="largeur, type="string", nullable=false)
-     */
-    private $largeur;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "hauteur", type: "string", length: 4, nullable: false)]
+    private string $hauteur;
 
-    /**
-     * @var DateTimeImmutable|null
-     *
-     * @ORM\Column(name="date_prise_de_vue", type="datetime", nullable=true)
-     */
-    private $datePriseDeVue;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "largeur", type: "string", nullable: false)]
+    private string $largeur;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="mots_cles_texte", type="string", nullable=true)
-     */
-    private $motsClesTexte;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "date_prise_de_vue", type: "datetime", nullable: true)]
+    private ?\DateTime $datePriseDeVue = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="commentaire", type="string", nullable=true)
-     */
-    private $commentaire;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "mots_cles_texte", type: "string", nullable: true)]
+    private ?string $motsClesTexte = null;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nom_original", type="string", nullable=true)
-     */
-    private $nomOriginal;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "commentaire", type: "string", nullable: true)]
+    private ?string $commentaire = null;
 
-    /**
-     * @var DateTimeImmutable|null
-     *
-     * @ORM\Column(name="date_creation", type="datetime", nullable=true)
-     */
-    private $dateCreation;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "nom_original", type: "string", nullable: true)]
+    private ?string $nomOriginal = null;
 
-    /**
-     * @var DateTimeImmutable|null
-     *
-     * @ORM\Column(name="date_modification", type="datetime", nullable=true)
-     */
-    private $dateModification;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "date_creation", type: "datetime", nullable: true)]
+    private ?\DateTime $dateCreation = null;
 
-    /**
-     * @var DateTimeImmutable|null
-     *
-     * @ORM\Column(name="date_liaison", type="datetime", nullable=true)
-     */
-    private $dateLiaison;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "date_modification", type: "datetime", nullable: true)]
+    private ?\DateTime $dateModification = null;
 
-    /**
-     * @var \DateTimeImmutable|null
-     *
-     * @ORM\Column(name="date_transmission", type="datetime", nullable=true)
-     */
-    private $dateTransmission;
+    #[Groups(['image'])]
+    #[ORM\Column(name: "date_liaison", type: "datetime", nullable: true)]
+    private ?\DateTime $dateLiaison = null;
 
-   
+    #[Groups(['image_tag'])]
+    #[ORM\OneToMany(mappedBy: 'image', targetEntity: DelImageTag::class, orphanRemoval: true,cascade:['persist'])]
+    private Collection $image_tags;
 
-    /**
-     * Get the value of idImage
-     */
-    public function getIdImage(): int
+    #[Groups(['image_vote'])]
+    #[ORM\OneToMany(mappedBy: 'image', targetEntity: DelImageVote::class, orphanRemoval: true,cascade:['persist'])]
+    private Collection $image_votes;
+
+    #[Groups(['image_stat'])]
+    #[ORM\OneToMany(mappedBy: 'image', targetEntity: DelImageStat::class, orphanRemoval: true,cascade:['persist'])]
+    private Collection $image_stats;
+
+    public function __construct()
     {
-        return $this->idImage;
+        $this->datePriseDeVue = new DateTime();
+        $this->dateCreation = new DateTime;
+        $this->dateModification = new DateTime();
+        $this->dateLiaison = new DateTime();
+        $this->image_tags = new ArrayCollection();
+        $this->image_votes = new ArrayCollection();
+        $this->image_stats = new ArrayCollection();
+        
     }
 
-    /**
-     * Set the value of idImage
-     */
-    public function setIdImage(int $idImage): self
-    {
-        $this->idImage = $idImage;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of ceObservation
-     */
-    public function getCeObservation(): ?int
-    {
-        return $this->ceObservation;
-    }
-
-    /**
-     * Set the value of ceObservation
-     */
-    public function setCeObservation(?int $ceObservation): self
-    {
-        $this->ceObservation = $ceObservation;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of ceUtilisateur
-     */
     public function getCeUtilisateur(): ?int
     {
         return $this->ceUtilisateur;
     }
 
-    /**
-     * Set the value of ceUtilisateur
-     */
     public function setCeUtilisateur(?int $ceUtilisateur): self
     {
         $this->ceUtilisateur = $ceUtilisateur;
-
         return $this;
     }
 
-    /**
-     * Get the value of nomUtilisateur
-     */
     public function getNomUtilisateur(): ?string
     {
         return $this->nomUtilisateur;
     }
 
-    /**
-     * Set the value of nomUtilisateur
-     */
     public function setNomUtilisateur(?string $nomUtilisateur): self
     {
         $this->nomUtilisateur = $nomUtilisateur;
-
         return $this;
     }
 
-    /**
-     * Get the value of prenomUtilisateur
-     */
     public function getPrenomUtilisateur(): ?string
     {
         return $this->prenomUtilisateur;
     }
 
-    /**
-     * Set the value of prenomUtilisateur
-     */
-    public function setPrenomUtilisateur(?string $prenomUtilisateur): self
+    public function setPrenomUtilisateur(string $prenomUtilisateur): self
     {
         $this->prenomUtilisateur = $prenomUtilisateur;
-
         return $this;
     }
 
-    /**
-     * Get the value of courrielUtilisateur
-     */
     public function getCourrielUtilisateur(): ?string
     {
         return $this->courrielUtilisateur;
     }
 
-    /**
-     * Set the value of courrielUtilisateur
-     */
     public function setCourrielUtilisateur(?string $courrielUtilisateur): self
     {
         $this->courrielUtilisateur = $courrielUtilisateur;
-
         return $this;
     }
 
-    /**
-     * Get the value of hauteur
-     */
     public function getHauteur(): string
     {
         return $this->hauteur;
     }
 
-    /**
-     * Set the value of hauteur
-     */
     public function setHauteur(string $hauteur): self
     {
         $this->hauteur = $hauteur;
-
         return $this;
     }
 
-    /**
-     * Get the value of largeur
-     */
     public function getLargeur(): string
     {
         return $this->largeur;
     }
 
-    /**
-     * Set the value of largeur
-     */
     public function setLargeur(string $largeur): self
     {
         $this->largeur = $largeur;
-
         return $this;
     }
 
-    /**
-     * Get the value of datePriseDeVue
-     */
-    public function getDatePriseDeVue(): ?DateTimeImmutable
+    public function getDatePriseDeVue(): ?DateTime
     {
         return $this->datePriseDeVue;
     }
 
-    /**
-     * Set the value of datePriseDeVue
-     */
-    public function setDatePriseDeVue(?DateTimeImmutable $datePriseDeVue): self
+    public function setDatePriseDeVue(?DateTime $datePriseDeVue): self
     {
         $this->datePriseDeVue = $datePriseDeVue;
-
         return $this;
     }
 
-    /**
-     * Get the value of motsClesTexte
-     */
     public function getMotsClesTexte(): ?string
     {
         return $this->motsClesTexte;
     }
 
-    /**
-     * Set the value of motsClesTexte
-     */
     public function setMotsClesTexte(?string $motsClesTexte): self
     {
         $this->motsClesTexte = $motsClesTexte;
-
         return $this;
     }
 
-    /**
-     * Get the value of commentaire
-     */
     public function getCommentaire(): ?string
     {
         return $this->commentaire;
     }
 
-    /**
-     * Set the value of commentaire
-     */
     public function setCommentaire(?string $commentaire): self
     {
         $this->commentaire = $commentaire;
-
         return $this;
     }
 
-    /**
-     * Get the value of nomOriginal
-     */
     public function getNomOriginal(): ?string
     {
         return $this->nomOriginal;
     }
 
-    /**
-     * Set the value of nomOriginal
-     */
     public function setNomOriginal(?string $nomOriginal): self
     {
         $this->nomOriginal = $nomOriginal;
-
         return $this;
     }
 
-    /**
-     * Get the value of dateCreation
-     */
-    public function getDateCreation(): ?DateTimeImmutable
+    public function getDateCreation(): ?DateTime
     {
         return $this->dateCreation;
     }
 
-    /**
-     * Set the value of dateCreation
-     */
-    public function setDateCreation(?DateTimeImmutable $dateCreation): self
+    public function setDateCreation(?DateTime $dateCreation): self
     {
         $this->dateCreation = $dateCreation;
-
         return $this;
     }
 
-    /**
-     * Get the value of dateModification
-     */
-    public function getDateModification(): ?DateTimeImmutable
+    public function getDateModification(): ?DateTime
     {
         return $this->dateModification;
     }
 
-    /**
-     * Set the value of dateModification
-     */
-    public function setDateModification(?DateTimeImmutable $dateModification): self
+    public function setDateModification(?DateTime $dateModification): self
     {
         $this->dateModification = $dateModification;
-
         return $this;
     }
 
-    /**
-     * Get the value of dateLiaison
-     */
-    public function getDateLiaison(): ?DateTimeImmutable
+    public function getDateLiaison(): ?DateTime
     {
         return $this->dateLiaison;
     }
 
-    /**
-     * Set the value of dateLiaison
-     */
-    public function setDateLiaison(?DateTimeImmutable $dateLiaison): self
+    public function setDateLiaison(?DateTime $dateLiaison): self
     {
         $this->dateLiaison = $dateLiaison;
+        return $this;
+    }
+
+    /**
+     * Get the value of observation
+     */
+    public function getObservation(): DelObservation
+    {
+        return $this->observation;
+    }
+
+    /**
+     * Set the value of observation
+     */
+    public function setObservation(DelObservation $observation): self
+    {
+        $this->observation = $observation;
 
         return $this;
     }
 
     /**
-     * Get the value of dateTransmission
+     * Get the value of image_tags
      */
-    public function getDateTransmission(): ?\DateTimeImmutable
+    public function getImageTags(): Collection
     {
-        return $this->dateTransmission;
+        return $this->image_tags;
     }
 
     /**
-     * Set the value of dateTransmission
+     * Set the value of image_tags
      */
-    public function setDateTransmission(?\DateTimeImmutable $dateTransmission): self
+    public function addImageTags(DelImageTag $image_tag): self
     {
-        $this->dateTransmission = $dateTransmission;
+        if (!$this->image_tags->contains($image_tag)) {
+            $this->image_tags->add($image_tag);
+            $image_tag->setImage($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the value of utilisateur
+     */
+    public function getUtilisateur(): ?DelUtilisateur
+    {
+        return $this->utilisateur;
+    }
+
+    /**
+     * Set the value of utilisateur
+     */
+    public function setUtilisateur(?DelUtilisateur $utilisateur): self
+    {
+        $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of image_votes
+     */
+    public function getImageVotes(): Collection
+    {
+        return $this->image_votes;
+    }
+
+    /**
+     * Set the value of image_votes
+     */
+    public function addImageVotes(DelImageVote $image_vote): self
+    {
+        if (!$this->image_votes->contains($image_vote)) {
+            $this->image_votes->add($image_vote);
+            $image_vote->setImage($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the value of image_stats
+     */
+    public function getImageStats(): Collection
+    {
+        return $this->image_stats;
+    }
+
+    /**
+     * Set the value of image_stats
+     */
+    public function addImageStats(DelImageStat $image_stat): self
+    {
+        if (!$this->image_stats->contains($image_stat)) {
+            $this->image_stats->add($image_stat);
+            $image_stat->setImage($this);
+        }
+
+        return $this;
+    }
+    
+    /**
+     * Get the value of id_image
+     */
+    public function getIdImage(): int
+    {
+        return $this->id_image;
+    }
+
+    /**
+     * Set the value of id_image
+     */
+    public function setIdImage(int $id_image): self
+    {
+        $this->id_image = $id_image;
 
         return $this;
     }
