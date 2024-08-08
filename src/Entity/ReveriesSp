@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
+/**
+ * DelObservation
+ */
+#[ORM\Table(name: "reveries_sp",options:["engine"=>"InnoDB"])]
+#[ORM\Entity()]
+
+class ReveriesSp
+{   
+    #[ORM\Column(name: "num_nom", type: "integer", nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    #[Groups(['reveries'])]
+    private int $num_nom;
+
+    #[Groups(['reveries'])]
+    #[ORM\Column(name: "nom", type: "string", length:100,nullable: false)]
+    private ?string $nom = null;
+
+    public function __construct()
+    {
+        
+    }
+
+    /**
+     * Get the value of num_nom
+     */
+    public function getNumNom(): int
+    {
+        return $this->num_nom;
+    }
+
+    /**
+     * Set the value of num_nom
+     */
+    public function setNumNom(int $num_nom): self
+    {
+        $this->num_nom = $num_nom;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of nom
+     */
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    /**
+     * Set the value of nom
+     */
+    public function setNom(?string $nom): self
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+}

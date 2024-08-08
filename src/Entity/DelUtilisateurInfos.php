@@ -7,7 +7,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Table(name: "del_utilisateur_infos")]
+#[ORM\Table(name: "del_utilisateur_infos",options:["engine"=>"InnoDB"])]
 #[ORM\Index(name: "courriel_idx", columns: ["courriel"])]
 #[ORM\Entity(repositoryClass: DelUtilisateurInfosRepository::class)]
 class DelUtilisateurInfos
@@ -19,7 +19,7 @@ class DelUtilisateurInfos
     private int $id_utilisateur;
     
     #[ORM\OneToOne(inversedBy: 'utilisateur_infos')]
-    #[ORM\JoinColumn(nullable: false,name:"id_utilisateur",referencedColumnName:"ID")]
+    #[ORM\JoinColumn(nullable: true,name:"id_utilisateur",referencedColumnName:"ID")]
     private ?DelUtilisateur $utilisateurUI = null;
 
     #[Groups(['utilisateur_infos'])]

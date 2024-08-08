@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Repository\DelImageRepository;
 use Doctrine\ORM\Mapping as ORM;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use DateTime;
@@ -13,8 +12,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * DelImage
  */
 
-#[ORM\Table(name: "del_image")]
-#[ORM\Entity(repositoryClass: DelImageRepository::class)]
+#[ORM\Table(name: "del_image",options:["engine"=>"InnoDB"])]
+#[ORM\Entity(repositoryClass: DelImageRepository::class,readOnly:true)]
 class DelImage
 {
     #[Groups(['image'])]
@@ -24,11 +23,11 @@ class DelImage
     private int $id_image = 0;
 
     
-    #[ORM\ManyToOne(inversedBy: 'images')]
+    #[ORM\ManyToOne(inversedBy: 'images',fetch:"EAGER")]
     #[ORM\JoinColumn(name:"ce_observation",nullable: false,referencedColumnName:"id_observation")]
     private ?DelObservation $observation = null;
 
-    #[ORM\ManyToOne(inversedBy: 'images')]
+    #[ORM\ManyToOne(inversedBy: 'images',fetch:"EAGER")]
     #[ORM\JoinColumn(name:"ce_utilisateur",nullable: false,referencedColumnName:"ID")]
     private ?DelUtilisateur $utilisateur = null;
 
@@ -83,6 +82,10 @@ class DelImage
     #[Groups(['image'])]
     #[ORM\Column(name: "date_liaison", type: "datetime", nullable: true)]
     private ?\DateTime $dateLiaison = null;
+
+    #[Groups(['image'])]
+    #[ORM\Column(name: "date_transmission", type: "datetime", nullable: true)]
+    private ?\DateTime $dateTransmission = null;
 
     #[Groups(['image_tag'])]
     #[ORM\OneToMany(mappedBy: 'image', targetEntity: DelImageTag::class, orphanRemoval: true,cascade:['persist'])]
@@ -364,6 +367,24 @@ class DelImage
     public function setIdImage(int $id_image): self
     {
         $this->id_image = $id_image;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of dateTransmission
+     */
+    public function getDateTransmission(): ?\DateTime
+    {
+        return $this->dateTransmission;
+    }
+
+    /**
+     * Set the value of dateTransmission
+     */
+    public function setDateTransmission(?\DateTime $dateTransmission): self
+    {
+        $this->dateTransmission = $dateTransmission;
 
         return $this;
     }

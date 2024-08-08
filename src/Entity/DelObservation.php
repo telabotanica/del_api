@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * DelObservation
  */
-#[ORM\Table(name: "del_observation")]
+#[ORM\Table(name: "del_observation",options:["engine"=>"InnoDB"])]
 #[ORM\Index(name: "courriel_utilisateur", columns: ["courriel_utilisateur"])]
 #[ORM\Index(name: "nom_sel", columns: ["nom_sel"])]
 #[ORM\Index(name: "nom_referentiel", columns: ["nom_referentiel"])]
@@ -31,10 +31,13 @@ class DelObservation
     #[Groups(['observation'])]
     private int $id_observation;
 
-    #[Groups(['utilisateur'])]
-    #[ORM\ManyToOne(inversedBy: 'observations',targetEntity:DelUtilisateur::class)]
-    #[ORM\JoinColumn(nullable: false,name: "ce_utilisateur",referencedColumnName:"ID")]
+    #[ORM\ManyToOne(inversedBy: 'observations',targetEntity:DelUtilisateur::class,fetch:"EAGER")]
+    #[ORM\JoinColumn(nullable: true,name: "ce_utilisateur",referencedColumnName:"ID")]
     private ?DelUtilisateur $utilisateurO = null;
+
+    #[Groups(['observation'])]
+    #[ORM\Column(name: "ce_utilisateur", type: "integer", length:11, nullable: true)]
+    private ?int $ce_utilisateur = null;
 
     #[Groups(['observation'])]
     #[ORM\Column(name: "nom_utilisateur", type: "string", length: 155, nullable: true)]
@@ -141,8 +144,12 @@ class DelObservation
     private Collection $images;
 
     #[Groups(['commentaire'])]
-    #[ORM\OneToMany(mappedBy: 'observation', targetEntity: DelCommentaire::class, orphanRemoval: true,cascade:['persist'])]
+    #[ORM\OneToMany(mappedBy: 'observation', targetEntity: DelCommentaire::class)]
     private Collection $commentaires;
+
+    #[Groups(['modif_date'])]
+    #[ORM\OneToMany(mappedBy: 'observation', targetEntity: DelObservationModifDate::class, orphanRemoval: true,cascade:['persist'])]
+    private Collection $modif_dates;
 
     public function __construct()
     {
@@ -152,6 +159,8 @@ class DelObservation
         $this->dateObservation = new DateTimeImmutable();
         $this->images = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
+        $this->utilisateurO = new DelUtilisateur();
+        $this->modif_dates = new ArrayCollection();
         
     }
 
@@ -500,6 +509,16 @@ class DelObservation
         return $this;
     }
 
+    public function removeCommentaires(DelCommentaire $commentaire): self
+    {
+        if ($this->commentaires->removeElement($commentaire)) {
+            if ($commentaire->getObservation() === $this) {
+                $commentaire->setObservation(null);
+            }
+        }
+
+        return $this;
+    }
     /**
      * Get the value of utilisateurO
      */
@@ -532,6 +551,56 @@ class DelObservation
     public function setIdObservation(int $id_observation): self
     {
         $this->id_observation = $id_observation;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of ce_utilisateur
+     */
+    public function getCeUtilisateur(): ?int
+    {
+        return $this->ce_utilisateur;
+    }
+
+    /**
+     * Set the value of ce_utilisateur
+     */
+    public function setCeUtilisateur(?int $ce_utilisateur): self
+    {
+        $this->ce_utilisateur = $ce_utilisateur;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of modif_dates
+     */
+    public function getModifDates(): Collection
+    {
+        return $this->modif_dates;
+    }
+
+    /**
+     * Set the value of modif_dates
+     */
+    public function addModifDates(DelObservationModifDate $modif_date): self
+    {
+        if (!$this->modif_dates->contains($modif_date)) {
+            $this->modif_dates->add($modif_date);
+            $modif_date->setObservation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentaire(DelObservationModifDate $modif_date): self
+    {
+        if ($this->modif_dates->removeElement($modif_date)) {
+            if ($modif_date->getObservation() === $this) {
+                $modif_date->setObservation(null);
+            }
+        }
 
         return $this;
     }

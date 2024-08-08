@@ -7,16 +7,16 @@ use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Table(name: "del_image_tag",options:["engine"=>"InnoDB"])]
+#[ORM\Table(name: "del_image_tag_sauv",options:["engine"=>"InnoDB"])]
 #[ORM\Index(name: "ce_utilisateur", columns: ["ce_utilisateur"])]
 #[ORM\Index(name: "tag", columns: ["tag"])]
 #[ORM\Index(name: "tag_normalise", columns: ["tag_normalise"])]
 #[ORM\Index(name: "ce_image", columns: ["ce_image"])]
 #[ORM\Entity(repositoryClass: DelImageTagRepository::class)]
 
-class DelImageTag
+class DelImageTagSauv
 {
-    #[Groups(['image_tag'])]
+    #[Groups(['image_tag_sauv'])]
     #[ORM\Column(name: "id_tag", type: "bigint", nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: "IDENTITY")]
@@ -30,23 +30,23 @@ class DelImageTag
     #[ORM\Column(name: "ce_utilisateur", type: "string", length: 255, nullable: true)]
     private string $ce_utilisateur;
 
-    #[Groups(['image_tag'])]
+    #[Groups(['image_tag_sauv'])]
     #[ORM\Column(name: "tag", type: "string", length: 255, nullable: false)]
     private string $tag;
 
-    #[Groups(['image_tag'])]
+    #[Groups(['image_tag_sauv'])]
     #[ORM\Column(name: "tag_normalise", type: "string", length: 255, nullable: false)]
     private string $tagNormalise;
 
-    #[Groups(['image_tag'])]
+    #[Groups(['image_tag_sauv'])]
     #[ORM\Column(name: "date", type: "datetime", nullable: true, options: ["default" => "CURRENT_TIMESTAMP", "comment" => "Date de création du tag."])]
     private DateTime $date;
 
-    #[Groups(['image_tag'])]
+    #[Groups(['image_tag_sauv'])]
     #[ORM\Column(name: "actif", type: "integer", nullable: false)]
     private int $actif;
 
-    #[Groups(['image_tag'])]
+    #[Groups(['image_tag_sauv'])]
     #[ORM\Column(name: "date_modification", type: "datetime", nullable: true)]
     private ?DateTime $dateModification = null;
 

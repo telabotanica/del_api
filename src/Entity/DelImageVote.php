@@ -5,11 +5,9 @@ namespace App\Entity;
 use App\Repository\DelImageVoteRepository;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Table(name: "del_image_vote")]
+#[ORM\Table(name: "del_image_vote",options:["engine"=>"InnoDB"])]
 #[ORM\Index(name: "ce_image", columns: ["ce_image"])]
 #[ORM\Index(name: "ce_protocole", columns: ["ce_protocole"])]
 #[ORM\Index(name: "ce_utilisateur", columns: ["ce_utilisateur"])]
@@ -22,24 +20,24 @@ class DelImageVote
     #[ORM\GeneratedValue(strategy: "IDENTITY")]
     private ?int $id_vote = null;
 
-    #[ORM\ManyToOne(inversedBy: 'image_votes')]
+    #[ORM\ManyToOne(inversedBy: 'image_votes',fetch:"EAGER")]
     #[ORM\JoinColumn(nullable: false,name: "ce_image",referencedColumnName:"id_image")]
     private ?DelImage $image = null;
 
-    #[ORM\ManyToOne(inversedBy: 'image_votes')]
+    #[ORM\ManyToOne(inversedBy: 'image_votes',fetch:"EAGER")]
     #[ORM\JoinColumn(nullable: false,name: "ce_protocole",referencedColumnName:"id_protocole")]
     private ?DelImageProtocole $image_protocole = null;
 
-    #[ORM\ManyToOne(inversedBy: 'image_votes')]
-    #[ORM\JoinColumn(nullable: false,name: "ce_utilisateur",referencedColumnName:"ID")]
-    private ?DelUtilisateur $utilisateurIV = null;
+    #[Groups(['image_tag'])]
+    #[ORM\Column(name: "ce_utilisateur", type: "string", length: 255, nullable: true)]
+    private string $ce_utilisateur;
 
     #[Groups(['image_vote'])]
     #[ORM\Column(name: "valeur", type: "boolean", nullable: false)]
     private bool $valeur;
 
     #[Groups(['image_vote'])]
-    #[ORM\Column(name: "date", type: "datetime", nullable: false)]
+    #[ORM\Column(name: "date", type: "datetime", nullable: true,options:["default" => "CURRENT_TIMESTAMP", "comment" => "Date de création du vote."])]
     private DateTime $date;
 
     public function __construct()
@@ -108,24 +106,6 @@ class DelImageVote
     }
 
     /**
-     * Get the value of utilisateurIV
-     */
-    public function getUtilisateurIV(): ?DelUtilisateur
-    {
-        return $this->utilisateurIV;
-    }
-
-    /**
-     * Set the value of utilisateurIV
-     */
-    public function setUtilisateurIV(?DelUtilisateur $utilisateurIV): self
-    {
-        $this->utilisateurIV = $utilisateurIV;
-
-        return $this;
-    }
-
-    /**
      * Get the value of id_vote
      */
     public function getIdVote(): ?int
@@ -139,6 +119,24 @@ class DelImageVote
     public function setIdVote(?int $id_vote): self
     {
         $this->id_vote = $id_vote;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of ce_utilisateur
+     */
+    public function getCeUtilisateur(): string
+    {
+        return $this->ce_utilisateur;
+    }
+
+    /**
+     * Set the value of ce_utilisateur
+     */
+    public function setCeUtilisateur(string $ce_utilisateur): self
+    {
+        $this->ce_utilisateur = $ce_utilisateur;
 
         return $this;
     }

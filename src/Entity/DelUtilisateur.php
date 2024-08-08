@@ -12,12 +12,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * DelUtilisateur
  */
-#[ORM\Table(name: "del_utilisateurs")]
-#[ORM\Entity(repositoryClass: DelUtilisateurRepository::class)]
+#[ORM\Table(name: "del_utilisateurs",options:["engine"=>"InnoDB"])]
+#[ORM\Entity(repositoryClass: DelUtilisateurRepository::class,readOnly:true)]
 class DelUtilisateur
 {
     #[Groups(['utilisateur'])]
-    #[ORM\Column(name: "ID", type: "integer", nullable: false)]
+    #[ORM\Column(name: "ID", type: "integer", length:11,nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: "IDENTITY")]
     private int $ID = 0;
@@ -26,6 +26,7 @@ class DelUtilisateur
     #[ORM\Column(name: "user_email", type: "string", length: 255, nullable: true)]
     private ?string $user_email = null;
 
+    #[Groups(['images_util'])]
     #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: DelImage::class, orphanRemoval: true,cascade:['persist'])]
     private Collection $images;
 
@@ -37,32 +38,14 @@ class DelUtilisateur
     #[ORM\OneToMany(mappedBy: 'utilisateurO', targetEntity: DelObservation::class, orphanRemoval: true,cascade:['persist'])]
     private Collection $observations;
 
-    #[Groups(['commentaire_util'])]
-    #[ORM\OneToMany(mappedBy: 'utilisateurC', targetEntity: DelCommentaire::class, orphanRemoval: true,cascade:['persist'])]
-    private Collection $commentaires;
-
-    #[Groups(['image_vote_util'])]
-    #[ORM\OneToMany(mappedBy: 'utilisateurIV', targetEntity: DelImageVote::class, orphanRemoval: true,cascade:['persist'])]
-    private Collection $image_votes;
-
-    #[Groups(['image_tag_util'])]
-    #[ORM\OneToMany(mappedBy: 'utilisateurIT', targetEntity: DelImageTag::class, orphanRemoval: true,cascade:['persist'])]
-    private Collection $image_tags;
-
-    #[Groups(['commentaire_vote_util'])]
-    #[ORM\OneToMany(mappedBy: 'utilisateurCV', targetEntity: DelCommentaireVote::class, orphanRemoval: true,cascade:['persist'])]
-    private Collection $commentaire_votes;
 
     public function __construct()
     {
         
         $this->images = new ArrayCollection();
         $this->observations = new ArrayCollection();
-        $this->commentaires = new ArrayCollection();
-        $this->image_votes = new ArrayCollection();
-        $this->image_tags = new ArrayCollection();
-        $this->commentaire_votes = new ArrayCollection();
-        
+       
+
     }
 
     /**
@@ -140,88 +123,6 @@ class DelUtilisateur
             $observation->setUtilisateurO($this);
         }
 
-        return $this;
-    }
-
-    /**
-     * Get the value of commentaires
-     */
-    public function getCommentaires(): Collection
-    {
-        return $this->commentaires;
-    }
-
-    /**
-     * Set the value of commentaires
-     */
-    public function addCommentaires(DelCommentaire $commentaire): self
-    {
-        if (!$this->commentaires->contains($commentaire)) {
-            $this->commentaires->add($commentaire);
-            $commentaire->setUtilisateurC($this);
-        }
-        return $this;
-    }
-
-    /**
-     * Get the value of image_votes
-     */
-    public function getImageVotes(): Collection
-    {
-        return $this->image_votes;
-    }
-
-    /**
-     * Set the value of image_votes
-     */
-    public function addImageVotes(DelImageVote $image_vote): self
-    {
-        if (!$this->image_votes->contains($image_vote)) {
-            $this->image_votes->add($image_vote);
-            $image_vote->setUtilisateurIV($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get the value of image_tags
-     */
-    public function getImageTags(): Collection
-    {
-        return $this->image_tags;
-    }
-
-    /**
-     * Set the value of image_tags
-     */
-    public function addImageTags(DelImageTag $image_tag): self
-    {
-        if (!$this->image_tags->contains($image_tag)) {
-            $this->image_tags->add($image_tag);
-            $image_tag->setUtilisateurIT($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get the value of commentaire_votes
-     */
-    public function getCommentaireVotes(): Collection
-    {
-        return $this->commentaire_votes;
-    }
-
-    /**
-     * Set the value of commentaire_votes
-     */
-    public function addCommentaireVotes(DelCommentaireVote $commentaire_vote): self
-    {
-        if (!$this->commentaire_votes->contains($commentaire_vote)) {
-            $this->commentaire_votes->add($commentaire_vote);
-            $commentaire_vote->setUtilisateurCV($this);
-        }
         return $this;
     }
 

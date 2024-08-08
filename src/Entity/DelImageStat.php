@@ -6,7 +6,7 @@ use App\Repository\DelImageStatRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Table(name: "del_image_stat")]
+#[ORM\Table(name: "del_image_stat",options:["engine"=>"InnoDB"])]
 #[ORM\Index(name: "ce_image", columns: ["ce_image"])]
 #[ORM\Index(name: "ce_protocole", columns: ["ce_protocole", "moyenne"])]
 #[ORM\Index(name: "nb_votes", columns: ["nb_votes"])]
@@ -18,15 +18,18 @@ class DelImageStat
 {
     #[Groups(['image_stat'])]
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "AUTO")]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    #[ORM\Column(name: "id", type: "integer", nullable: false)]
+    private int $id;
+
     #[ORM\Column(name:"ce_image",type: "integer")]
     private int $ce_image;
 
-    #[ORM\ManyToOne(inversedBy: 'image_stats')]
+    #[ORM\ManyToOne(inversedBy: 'image_stats',fetch:"EAGER")]
     #[ORM\JoinColumn(nullable: false,name:"ce_image",referencedColumnName:"id_image")]
     private ?DelImage $image = null;
 
-    #[ORM\ManyToOne(inversedBy: 'image_stats')]
+    #[ORM\ManyToOne(inversedBy: 'image_stats',fetch:"EAGER")]
     #[ORM\JoinColumn(nullable: false,name: "ce_protocole",referencedColumnName:"id_protocole")]
     private ?DelImageProtocole $image_protocole = null;
 
@@ -148,6 +151,24 @@ class DelImageStat
     public function setCeImage(int $ce_image): self
     {
         $this->ce_image = $ce_image;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of id
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set the value of id
+     */
+    public function setId(int $id): self
+    {
+        $this->id = $id;
 
         return $this;
     }

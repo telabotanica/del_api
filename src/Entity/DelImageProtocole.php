@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Table(name: "del_image_protocole")]
+#[ORM\Table(name: "del_image_protocole",options:["engine"=>"InnoDB"])]
 #[ORM\Entity(repositoryClass: DelImageProtocoleRepository::class)]
 class DelImageProtocole
 {

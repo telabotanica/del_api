@@ -8,8 +8,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use DateTime;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Service\PDOConnection;
+use PDO;
 
-#[ORM\Table(name: "del_commentaire")]
+#[ORM\Table(name: "del_commentaire",options:["engine"=>"InnoDB"])]
 #[ORM\Index(name: "ce_proposition", columns: ["ce_proposition"])]
 #[ORM\Index(name: 'ce_utilisateur', columns: ['ce_utilisateur'])]
 #[ORM\Index(name: "ce_observation", columns: ["ce_observation"])]
@@ -23,12 +25,12 @@ class DelCommentaire
     #[ORM\GeneratedValue(strategy: "IDENTITY")]
     private ?int $id_commentaire = null;
 
-    #[ORM\ManyToOne(inversedBy: 'commentaires')]
-    #[ORM\JoinColumn(nullable: false,name:"ce_observation",referencedColumnName:"id_observation")]
+    #[ORM\ManyToOne(targetEntity: DelObservation::class, inversedBy: 'commentaires')]
+    #[ORM\JoinColumn(nullable: false, name:"ce_observation", referencedColumnName:"id_observation")]
     private ?DelObservation $observation = null;
 
   
-    #[ORM\ManyToOne(inversedBy: 'commentaires')]
+    #[ORM\ManyToOne(inversedBy: 'commentairesP')]
     #[ORM\JoinColumn(nullable: true,name: "ce_proposition",referencedColumnName:"id_commentaire")]
     private ?DelCommentaire $commentaireP = null;
 
@@ -41,9 +43,9 @@ class DelCommentaire
     #[ORM\Column(name: "texte", type: "text", length: 65535, nullable: true)]
     private ?string $texte = null;
 
-    #[ORM\ManyToOne(inversedBy: 'commentaires')]
-    #[ORM\JoinColumn(nullable: false,name:"ce_utilisateur",referencedColumnName:"ID")]
-    private ?DelUtilisateur $utilisateurC = null;
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "ce_utilisateur", type: "string", length: 255, nullable: true)]
+    private string $ce_utilisateur;
 
     #[Groups(['commentaire'])]
     #[ORM\Column(name: "utilisateur_prenom", type: "string", length: 255, nullable: true)]
@@ -86,7 +88,7 @@ class DelCommentaire
     private ?string $nomReferentiel = null;
 
     #[Groups(['commentaire'])]
-    #[ORM\Column(name: "date", type: "datetime", nullable: false, options: ["comment" => "Date de création du commentaire."])]
+    #[ORM\Column(name: "date", type: "datetime", nullable: true, options: ["default" => "CURRENT_TIMESTAMP", "comment" => "Date de création du commentaire."])]
     private ?\DateTime $date;
 
     #[Groups(['commentaire'])]
@@ -105,9 +107,17 @@ class DelCommentaire
     #[ORM\Column(name: "date_validation", type: "datetime", nullable: true)]
     private ?\DateTime $dateValidation = null;
 
+    #[Groups(['commentaire'])]
+    #[ORM\Column(name: "points", type: "integer", nullable: false)]
+    private int $score =0;
+
     #[Groups(['commentaire_vote'])]
     #[ORM\OneToMany(mappedBy: 'commentaire', targetEntity: DelCommentaireVote::class, orphanRemoval: true,cascade:['persist'])]
     private Collection $commentaire_votes;
+
+    #[Groups(['commentaire_vote'])]
+    #[ORM\OneToMany(mappedBy: 'commentaireP', targetEntity: DelCommentaire::class)]
+    private Collection $commentairesP;
 
     #[Groups(['commentaire_vote'])]
     #[ORM\OneToMany(mappedBy: 'commentaire', targetEntity: DelCommentaire::class)]
@@ -329,13 +339,24 @@ class DelCommentaire
     public function addCommentaireVotes(DelCommentaireVote $commentaire_vote): self
     {
         if (!$this->commentaire_votes->contains($commentaire_vote)) {
-            $this->commentaires->add($commentaire_vote);
+            $this->commentaire_votes->add($commentaire_vote);
             $commentaire_vote->setCommentaire($this);
         }
 
         return $this;
     }
+    
+    public function removeCommentaireVotes(DelCommentaire $commentaire_vote): self
+    {
+        if ($this->commentaire_votes->removeElement($commentaire_vote)) {
+            if ($commentaire_vote->getCommentaire() === $this) {
+                $commentaire_vote->setCommentaire(null);
+            }
+        }
 
+        return $this;
+    }
+    
     /**
      * Get the value of commentaires
      */
@@ -357,6 +378,16 @@ class DelCommentaire
         return $this;
     }
 
+    public function removeCommentaires(DelCommentaire $commentaire): self
+    {
+        if ($this->commentaires->removeElement($commentaire)) {
+            if ($commentaire->getCommentaire() === $this) {
+                $commentaire->setCommentaire(null);
+            }
+        }
+
+        return $this;
+    }
     /**
      * Get the value of commentaire
      */
@@ -371,24 +402,6 @@ class DelCommentaire
     public function setCommentaire(?DelCommentaire $commentaire): self
     {
         $this->commentaire = $commentaire;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of utilisateurC
-     */
-    public function getUtilisateurC(): ?DelUtilisateur
-    {
-        return $this->utilisateurC;
-    }
-
-    /**
-     * Set the value of utilisateurC
-     */
-    public function setUtilisateurC(?DelUtilisateur $utilisateurC): self
-    {
-        $this->utilisateurC = $utilisateurC;
 
         return $this;
     }
@@ -425,6 +438,94 @@ class DelCommentaire
     public function setCommentaireP(?DelCommentaire $commentaireP): self
     {
         $this->commentaireP = $commentaireP;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of score
+     */
+    public function getScore(): int
+    {
+        return $this->score;
+    }
+
+    /**
+     * Set the value of score
+     */
+    public function setScore(int $score): self
+    {
+        $score = 0;
+        foreach($this->commentaire_votes as $vote){
+            if(is_numeric($vote->getCeUtilisateur())){
+                            
+                if ($vote->getValeur()){
+                    $score+=3;
+                }else{
+                    $score+=-3;
+                }
+            }else{
+                
+                if ($vote->getValeur()){
+                    $score+=1;
+                }else{
+                    $score+=-1;
+                }
+            }
+        }
+
+        $this->score = $score;
+        
+        
+        return $this;
+    }
+
+    /**
+     * Get the value of commentairesP
+     */
+    public function getCommentairesP(): Collection
+    {
+        return $this->commentairesP;
+    }
+
+    /**
+     * Set the value of commentairesP
+     */
+    public function addCommentairesP(DelCommentaire $commentaireP): self
+    {
+        if (!$this->commentairesP->contains($commentaireP)) {
+            $this->commentairesP->add($commentaireP);
+            $commentaireP->setCommentaireP($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentairesP(DelCommentaire $commentaireP): self
+    {
+        if ($this->commentairesP->removeElement($commentaireP)) {
+            if ($commentaireP->getCommentaire() === $this) {
+                $commentaireP->setCommentaire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the value of ce_utilisateur
+     */
+    public function getCeUtilisateur(): string
+    {
+        return $this->ce_utilisateur;
+    }
+
+    /**
+     * Set the value of ce_utilisateur
+     */
+    public function setCeUtilisateur(string $ce_utilisateur): self
+    {
+        $this->ce_utilisateur = $ce_utilisateur;
 
         return $this;
     }
