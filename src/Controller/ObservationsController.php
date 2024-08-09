@@ -22,7 +22,7 @@ class ObservationsController extends AbstractController
         
 
     }
-
+    
     #[Route('/observationsToDetermine/{page}/{limit}', name: 'app_observations_determine',methods:['GET'])]
     public function observationsToDetermine(int $page,int $limit,DelObservationRepository $obsRepository): JsonResponse
     {
@@ -48,6 +48,16 @@ class ObservationsController extends AbstractController
     {
         
         $observations = $obsRepository->findVerifiedObservations($page,$limit);
+        $results = $this->json($observations, 200, [], ['groups' => ['observation','image','commentaire','commentaire_vote']]);
+       
+        return $results;
+    }
+
+    #[Route('/observationsByUser/{idUser}/{page}/{limit}', name: 'app_observations_verified',methods:['GET'])]
+    public function observationsByUser(int $idUser,int $page,int $limit,DelObservationRepository $obsRepository): JsonResponse
+    {
+        
+        $observations = $obsRepository->findObservationsByUser($idUser,$page,$limit);
         $results = $this->json($observations, 200, [], ['groups' => ['observation','image','commentaire','commentaire_vote']]);
        
         return $results;

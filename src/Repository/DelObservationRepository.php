@@ -36,7 +36,7 @@ class DelObservationRepository extends ServiceEntityRepository
         $limit = abs($limit);
         $connex = new PDOConnection();
         $offset = ($page * $limit)-$limit;
-        $query = $query = "SELECT * FROM del_observation o WHERE certitude = 'certain' OR score_max >= 4 ORDER BY id_observation DESC LIMIT $limit OFFSET $offset";
+        $query = $query = "SELECT * FROM del_observation o WHERE (certitude = 'certain' AND score_max >= 4) OR score_max >= 4 ORDER BY id_observation DESC LIMIT $limit OFFSET $offset";
         
         $stmt = $connex->prepare($query);
         $stmt->execute();
@@ -59,7 +59,7 @@ class DelObservationRepository extends ServiceEntityRepository
         $limit = abs($limit);
         $connex = new PDOConnection();
         $offset = ($page * $limit)-$limit;
-        $query = $query = "SELECT * FROM del_observation o WHERE (certitude = 'douteux' OR (score_max > 0 AND score_max < 4) ORDER BY id_observation DESC LIMIT $limit OFFSET $offset";
+        $query = $query = "SELECT * FROM del_observation o WHERE (certitude = 'douteux' AND (score_max >= 0 AND score_max < 4)) OR (score_max > 0 AND score_max < 4) ORDER BY id_observation DESC LIMIT $limit OFFSET $offset";
         
         $stmt = $connex->prepare($query);
         $stmt->execute();
@@ -82,8 +82,30 @@ class DelObservationRepository extends ServiceEntityRepository
         $limit = abs($limit);
         $connex = new PDOConnection();
         $offset = ($page * $limit)-$limit;
-        $query = "SELECT * FROM del_observation WHERE certitude = 'à déterminer' OR score_max<0 ORDER BY id_observation DESC LIMIT $limit OFFSET $offset";
+        $query = "SELECT * FROM del_observation WHERE (certitude = 'à déterminer' AND score_max <= 0) OR score_max < 0 ORDER BY id_observation DESC LIMIT $limit OFFSET $offset";
         
+        $stmt = $connex->prepare($query);
+        $stmt->execute();
+        $stmt->setFetchMode(PDO::FETCH_OBJ); 
+        $res1 = $stmt->fetchAll();
+        $obs_tab=[];
+        foreach ($res1 as $obs_bdd){
+            $obs = $this->findOneById($obs_bdd->id_observation);
+            
+            array_push($obs_tab,$obs);
+        }
+        return $obs_tab;
+    }
+
+    /**
+     * @return DelObservation[] Returns an array of DelObservation objects
+     */
+    public function findObservationsByUser(int $idUser,int $page,int $limit=12,): array
+    {
+        $limit = abs($limit);
+        $connex = new PDOConnection();
+        $offset = ($page * $limit)-$limit;
+        $query = "SELECT * FROM del_observation WHERE ce_utilisateur = $idUser ORDER BY id_observation DESC LIMIT $limit OFFSET $offset";
         $stmt = $connex->prepare($query);
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_OBJ); 
